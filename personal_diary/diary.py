@@ -15,7 +15,8 @@ class Diary:
         """
         Reads all entries currently stored in local database.
 
-        :return: dictionary containing all the stored entries, where each entry has an id, title, body, date, and time
+        Returns:
+             dictionary containing all the stored entries, where each entry has an id, title, body, date, and time
         """
         with open(self.local_db_path, "r") as stored_entries:
             return json.load(stored_entries)
@@ -24,7 +25,8 @@ class Diary:
         """
         Writes updated entry storage to local database.
 
-        :param entry_dict: dictionary containing all new entries where the key is the entry_id and the value is
+        Args:
+             entry_dict: dictionary containing all new entries where the key is the entry_id and the value is
                            a dictionary containing that entry's title, body, date, and time
         """
         with open(self.local_db_path, "w") as stored_entries:
@@ -34,9 +36,11 @@ class Diary:
         """
         Adds entry specified by request parameter to local database.
 
-        :param request: dictionary containing title, body text, and datetime (in form of Python datetime object)
-                        representing the entry to be added
-        :return: dictionary containing the entry_id of the new entry
+        Args:
+         request: dictionary containing title, body text, and datetime (in form of Python datetime object)
+                  representing the entry to be added
+        Returns:
+             dictionary containing the entry_id of the new entry
         """
         if not request or "title" not in request or "body" not in request or "datetime" not in request:
             return {"entry_id": 0}
@@ -57,7 +61,8 @@ class Diary:
         """
         Reads all current diary entries from the database and pretty prints them.
 
-        :return: dictionary containing all diary entries, where each entry has an id, title, body, date, and time
+        Returns:
+             dictionary containing all diary entries, where each entry has an id, title, body, date, and time
         """
         return self.read_from_db()
 
@@ -74,18 +79,18 @@ class Diary:
         curr_entries = self.read_from_db()
         if len(request) == 0 or len(curr_entries) == 0 or request["entry_id"] not in curr_entries.keys():
             return {"entry_id": 0}
-        else:
-            entry_id = request["entry_id"]
-            will_update_body = "body" in request
-            will_update_text = "title" in request
-            if will_update_text or will_update_body:
-                # if the updated body or title of the entry is specified in the request, then
-                # update the entry, otherwise leave value unchanged
-                curr_entries[entry_id]["body"] = request["body"] if will_update_body \
-                    else curr_entries[entry_id]["body"]
-                curr_entries[entry_id]["title"] = request["title"] if will_update_text \
-                    else curr_entries[entry_id]["title"]
-                self.write_to_db(curr_entries)
+
+        entry_id = request["entry_id"]
+        will_update_body = "body" in request
+        will_update_text = "title" in request
+        if will_update_text or will_update_body:
+            # if the updated body or title of the entry is specified in the request, then
+            # update the entry, otherwise leave value unchanged
+            curr_entries[entry_id]["body"] = request["body"] if will_update_body \
+                else curr_entries[entry_id]["body"]
+            curr_entries[entry_id]["title"] = request["title"] if will_update_text \
+                else curr_entries[entry_id]["title"]
+            self.write_to_db(curr_entries)
         return {request["entry_id"]: curr_entries[entry_id]}
 
     def delete_entry(self, request: dict) -> dict:
