@@ -6,6 +6,7 @@ class Diary:
     """
     A class representing a personal diary, with entry information stored in "personal_diary/entry_local_storage.json"
     """
+
     def __init__(self):
         self.last_id = 0
         self.local_db_path = os.path.join(os.path.abspath('..'), "personal_diary/entry_local_storage.json")
@@ -37,7 +38,31 @@ class Diary:
         pass
 
     def update_entry(self, request: dict) -> dict:
-        pass
+        """
+        Updates the entry specified by request parameter. The user may update the body text or title
+        of a given entry.
+
+        Args:
+            request: a dictionary containing the information to update and the specific entry.
+        Returns:
+            a dictionary containing the updated entry
+        """
+        curr_entries = self.read_from_db()
+        if len(request) == 0 or len(curr_entries) == 0 or request["entry_id"] not in curr_entries.keys():
+            return {"entry_id": 0}
+        else:
+            entry_id = request["entry_id"]
+            will_update_body = "body" in request
+            will_update_text = "title" in request
+            if will_update_text or will_update_body:
+                # if the updated body or title of the entry is specified in the request, then
+                # update the entry, otherwise leave value unchanged
+                curr_entries[entry_id]["body"] = request["body"] if will_update_body \
+                    else curr_entries[entry_id]["body"]
+                curr_entries[entry_id]["title"] = request["title"] if will_update_text \
+                    else curr_entries[entry_id]["title"]
+                self.write_to_db(curr_entries)
+        return {request["entry_id"]: curr_entries[entry_id]}
 
     def delete_entry(self, request: dict) -> dict:
         pass
