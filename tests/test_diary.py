@@ -73,5 +73,35 @@ class DiaryTestWriteToDb(unittest.TestCase):
         self.assertEqual(self.read(), test_dict)
 
 
+class DiaryTestIsIdInvalid(unittest.TestCase):
+    def setUp(self) -> None:
+        self.diary = Diary()
+
+    def tearDown(self) -> None:
+        with open(self.diary.local_db_path, 'w') as outfile:
+            outfile.write("{}")
+
+    def test_invalid_id_returns_true(self):
+        test_dict = {
+            "1": {"title": "title_value"},
+            "2": {"title": "title_value"}
+        }
+        self.diary.write_to_db(test_dict)
+
+        self.assertTrue(self.diary.is_id_invalid(-1))
+        self.assertTrue(self.diary.is_id_invalid(0))
+        self.assertTrue(self.diary.is_id_invalid(50))
+
+    def test_valid_id_returns_false(self):
+        test_dict = {
+            "1": {"title": "title_value"},
+            "2": {"title": "title_value"}
+        }
+        self.diary.write_to_db(test_dict)
+
+        self.assertFalse(self.diary.is_id_invalid(1))
+        self.assertFalse(self.diary.is_id_invalid(2))
+
+
 if __name__ == '__main__':
     unittest.main()
