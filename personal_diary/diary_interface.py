@@ -106,7 +106,7 @@ def update_entry():
         click.echo("No changes were made or the editor was closed without saving.")
         edited_body = original_body
 
-    diary.create_entry({"title": edited_title,
+    diary.update_entry({"title": edited_title,
                         "body": edited_body})
     click.echo("\nAny edits to the entry title or body have been saved.")
 
