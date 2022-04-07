@@ -15,8 +15,7 @@ class Diary:
         """
         Reads all entries currently stored in local database.
 
-        :return: dictionary containing all the stored entries, where each entry has an
-        id, title, body, date, and time
+        :return: dictionary containing all the stored entries, where each entry has an id, title, body, date, and time
         """
         with open(self.local_db_path, "r") as stored_entries:
             return json.load(stored_entries)
@@ -25,14 +24,34 @@ class Diary:
         """
         Writes updated entry storage to local database.
 
-        :param: entry_dict: dictionary containing all new entries where the key is the entry_id and the value is
+        :param entry_dict: dictionary containing all new entries where the key is the entry_id and the value is
                            a dictionary containing that entry's title, body, date, and time
         """
         with open(self.local_db_path, "w") as stored_entries:
             json.dump(entry_dict, stored_entries, indent=4)
 
     def create_entry(self, request: dict) -> dict:
-        pass
+        """
+        Adds entry specified by request parameter to local database.
+
+        :param request: dictionary containing title, body text, and datetime (in form of Python datetime object)
+                        representing the entry to be added
+        :return: dictionary containing the entry_id of the new entry
+        """
+        if not request or "title" not in request or "body" not in request or "datetime" not in request:
+            return {"entry_id": 0}
+
+        entry_id = self.last_id + 1
+        self.last_id = entry_id
+        curr_entries = self.read_from_db()
+        curr_entries[entry_id] = {
+            "title": request["title"],
+            "body": request["body"],
+            "date_created": request["datetime"].strftime("%m/%d/%Y"),
+            "time_created": request["datetime"].strftime("%H:%M"),
+        }
+        self.write_to_db(curr_entries)
+        return {"entry_id": str(entry_id)}
 
     def read_entry(self) -> dict:
         """
