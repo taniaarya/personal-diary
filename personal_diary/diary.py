@@ -34,8 +34,13 @@ class Diary:
     def create_entry(self, request: dict) -> dict:
         pass
 
-    def remove_entry(self, request: dict) -> dict:
-        pass
+    def read_entry(self) -> dict:
+        """
+        Reads all current diary entries from the database and pretty prints them.
+
+        :return: dictionary containing all diary entries, where each entry has an id, title, body, date, and time
+        """
+        return self.read_from_db()
 
     def update_entry(self, request: dict) -> dict:
         """
