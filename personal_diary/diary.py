@@ -41,3 +41,18 @@ class Diary:
 
     def delete_entry(self, request: dict) -> dict:
         pass
+
+    def is_id_invalid(self, entry_id: int):
+        """
+        Checks whether an id matches an existing diary entry or not.
+
+        Args:
+            entry_id: an int which represents the id of a diary entry
+
+        Returns:
+             is_invalid: boolean representing if the id is invalid or not. The value is true if the id is invalid,
+             meaning that it does not match an existing diary entry. The value is false if the id is valid, meaning that
+             it does match an existing entry.
+        """
+        saved_entries = self.read_from_db()
+        return str(entry_id) not in saved_entries.keys()
