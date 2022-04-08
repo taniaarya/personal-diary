@@ -1,5 +1,4 @@
 import click
-from datetime import datetime
 from diary import Diary
 
 
@@ -53,8 +52,7 @@ def create_entry():
         return
 
     diary.create_entry({"title": entry_title,
-                        "body": entry_body,
-                        "datetime": datetime.now()})
+                        "body": entry_body})
     click.echo("\nYour diary entry has been created.")
 
 

@@ -1,6 +1,7 @@
 import unittest
 import json
-from datetime import datetime, timezone
+import re
+from datetime import datetime
 from personal_diary.diary import Diary
 
 
@@ -88,33 +89,31 @@ class DiaryTestCreateEntry(unittest.TestCase):
         self.assertEqual(self.diary.create_entry(None), {"entry_id": 0})
 
     def test_request_missing_keys_returns_invalid_entry_id(self):
-        missing_title = {"body": "Body", "datetime": datetime.now()}
-        missing_body = {"title": "Title", "datetime": datetime.now()}
-        missing_datetime = {"title": "Title", "body": "Body"}
+        missing_title = {"body": "Body"}
+        missing_body = {"title": "Title"}
         self.assertEqual(self.diary.create_entry(missing_title), {"entry_id": 0})
         self.assertEqual(self.diary.create_entry(missing_body), {"entry_id": 0})
-        self.assertEqual(self.diary.create_entry(missing_datetime), {"entry_id": 0})
 
     def test_valid_request_returns_nonzero_entry_id(self):
-        valid_request = {"title": "Title", "body": "Body", "datetime": datetime.now()}
+        valid_request = {"title": "Title", "body": "Body"}
         self.assertNotEqual(self.diary.create_entry(valid_request), {"entry_id": 0})
 
     def test_entry_id_is_unique(self):
         ids = []
-        valid_request = {"title": "Title", "body": "Body", "datetime": datetime.now()}
+        valid_request = {"title": "Title", "body": "Body"}
         for _ in range(10):
             ids.append(self.diary.create_entry(valid_request)["entry_id"])
         self.assertEqual(len(set(ids)), 10)
 
     def test_create_entry_db_populated_with_correct_values(self):
-        valid_request = {"title": "Title", "body": "Body", "datetime": datetime.fromtimestamp(1649152195,
-                                                                                              tz=timezone.utc)}
+        valid_request = {"title": "Title", "body": "Body"}
         entry_id = self.diary.create_entry(valid_request)["entry_id"]
         db_value = self.read()
+        curr_time = datetime.now()
         self.assertEqual(db_value[entry_id]["title"], "Title")
         self.assertEqual(db_value[entry_id]["body"], "Body")
-        self.assertEqual(db_value[entry_id]["date_created"], "04/05/2022")
-        self.assertEqual(db_value[entry_id]["time_created"], "09:49")
+        self.assertTrue(re.match(r"^[0-9]{2}/[0-9]{2}/[0-9]{4}$", db_value[entry_id]["date_created"]))
+        self.assertTrue(re.match(r"^[0-9]{2}:[0-9]{2}$", db_value[entry_id]["time_created"]))
 
 
 class DiaryTestReadEntry(unittest.TestCase):
