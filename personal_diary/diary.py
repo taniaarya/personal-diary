@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 
 class Diary:
@@ -37,22 +38,23 @@ class Diary:
         Adds entry specified by request parameter to local database.
 
         Args:
-         request: dictionary containing title, body text, and datetime (in form of Python datetime object)
+         request: dictionary containing title, and body text
                   representing the entry to be added
         Returns:
              dictionary containing the entry_id of the new entry
         """
-        if not request or "title" not in request or "body" not in request or "datetime" not in request:
+        if not request or "title" not in request or "body" not in request:
             return {"entry_id": 0}
 
         entry_id = self.last_id + 1
         self.last_id = entry_id
         curr_entries = self.read_from_db()
+        curr_datetime = datetime.now()
         curr_entries[entry_id] = {
             "title": request["title"],
             "body": request["body"],
-            "date_created": request["datetime"].strftime("%m/%d/%Y"),
-            "time_created": request["datetime"].strftime("%H:%M"),
+            "date_created": curr_datetime.strftime("%m/%d/%Y"),
+            "time_created": curr_datetime.strftime("%H:%M"),
         }
         self.write_to_db(curr_entries)
         return {"entry_id": str(entry_id)}
