@@ -92,3 +92,25 @@ Within the `tests` folder is the following:
 - `test_diary.py`: the Python unit test file that tests all functions in the `Diary` class.
 - `test_app.py`: the Python integration test file to test Flask REST endpoints
 - `test_app_integration.py`: the Python integration test file for diary's CRUD operations
+
+## Team Member Split
+### Tania (20%)
+- Worked on researching Docker and Dockerizing the application
+- Wrote documentation on how to run and install application
+- Implemented create_entry operation including how IDs were generated and wrote associated tests 
+- Maintained merge requests
+### Mausam (20%)
+- Researched and set-up Flask base 
+- Implemented read_entry operation and wrote associated tests.
+- Wrote app integration tests with backend CRUD operations and Flask routes 
+### Max (20%)
+- Researched and implemented Click command-line interface integration with CRUD operations 
+- Tested and debugged Click operations and user interactions through the CLI 
+- Implemented delete_entry operation with associated tests
+### Danielle (20%)
+- Set up and tested CI/CD pipeline yaml file, ensuring that directories and environment variables were set correctly
+- Wrote base README (including full instructions on how to use the CLI commands)
+### Amarachi (20%)
+- Researched Click command-line interface tutorials and starter code
+- Implemented update_entry operation with associated tests
+- Cleaned up code in create_entry and update_entry
