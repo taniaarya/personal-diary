@@ -63,6 +63,7 @@ def read_entry():
     Read an existing diary entry.\f
 
     Prompts the user to enter an id of an existing diary entry to print out to the command line.
+    The ID, date, creation time, title, and body associated with the entry is printed.
     If an invalid ID is entered, then the operation terminates.
     """
     entry_id = click.prompt("\nEnter the ID of an existing diary entry to read").strip()
@@ -72,7 +73,9 @@ def read_entry():
         return
 
     selected_entry = diary.read_entry({"entry_id": str(entry_id)})
-    click.echo("\nTitle: " + selected_entry.get("title"))
+    click.echo("\nDate Created: " + selected_entry.get("date_created"))
+    click.echo("Time Created: " + selected_entry.get("time_created"))
+    click.echo("Title: " + selected_entry.get("title"))
     click.echo("Body:\n" + selected_entry.get("body"))
 
 
