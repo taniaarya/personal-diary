@@ -43,9 +43,6 @@ class Diary:
         Returns:
              dictionary containing the entry_id of the new entry
         """
-        if not request or "title" not in request or "body" not in request:
-            return {"entry_id": 0}
-
         entry_id = self.last_id + 1
         self.last_id = entry_id
         curr_entries = self.read_from_db()
@@ -74,25 +71,16 @@ class Diary:
         of a given entry.
 
         Args:
-            request: a dictionary containing the information to update and the specific entry.
+            request: a dictionary containing title, body and id of the specific entry.
+
         Returns:
             a dictionary containing the updated entry
         """
         curr_entries = self.read_from_db()
-        if len(request) == 0 or len(curr_entries) == 0 or request["entry_id"] not in curr_entries.keys():
-            return {"entry_id": 0}
-
         entry_id = request["entry_id"]
-        will_update_body = "body" in request
-        will_update_text = "title" in request
-        if will_update_text or will_update_body:
-            # if the updated body or title of the entry is specified in the request, then
-            # update the entry, otherwise leave value unchanged
-            curr_entries[entry_id]["body"] = request["body"] if will_update_body \
-                else curr_entries[entry_id]["body"]
-            curr_entries[entry_id]["title"] = request["title"] if will_update_text \
-                else curr_entries[entry_id]["title"]
-            self.write_to_db(curr_entries)
+        curr_entries[entry_id]["body"] = request["body"]
+        curr_entries[entry_id]["title"] = request["title"]
+        self.write_to_db(curr_entries)
         return {request["entry_id"]: curr_entries[entry_id]}
 
     def delete_entry(self, request: dict) -> dict:
