@@ -56,14 +56,17 @@ class Diary:
         self.write_to_db(curr_entries)
         return {"entry_id": str(entry_id)}
 
-    def read_entry(self) -> dict:
+    def read_entry(self, request: dict) -> dict:
         """
         Reads all current diary entries from the database and pretty prints them.
 
+        Args:
+            request: a dictionary a single key, "entry_id" whose value is the id of the entry to be read
         Returns:
-             dictionary containing all diary entries, where each entry has an id, title, body, date, and time
+            a dictionary containing title, body, date_created, and time_created of the requested entry_id
         """
-        return self.read_from_db()
+        curr_entries = self.read_from_db()
+        return curr_entries[request["entry_id"]]
 
     def update_entry(self, request: dict) -> dict:
         """
