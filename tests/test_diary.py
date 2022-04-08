@@ -1,7 +1,6 @@
 import unittest
 import json
 import re
-from datetime import datetime
 from personal_diary.diary import Diary
 
 
