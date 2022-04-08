@@ -50,27 +50,27 @@ The user first types in the title of their new diary entry. Then, a text editor 
 ### Viewing All Diary Entries
 On the command line interface, the user can input the command `python diary_cli.py view_all` to view all saved diary entries.
 
-The list will be displayed by ID in descending order. Each entry's ID, date of creation, and title is displayed.
+The list will be displayed in descending order of creation. Each entry's ID, date of creation, and title is displayed.
 
 ### Reading A Single Diary Entry
 
 On the command line interface, the user can input the command `python diary_cli.py read` to view all information about a specific entry.
 
-A prompt will ask for the user to input the integer ID assigned to the existing diary entry they wish to view. If no such ID exists, the command fails. 
+A prompt will ask for the user to input the ID assigned to the existing diary entry they wish to view. If no such ID exists, the command fails. 
 
-If the ID does exist, the entry ID, title, body, date of creation, and time of creation will be displayed.
+If the ID does exist, the title, body, date of creation, and time of creation will be displayed.
 
 ### Editing A Diary Entry
 On the command line interface, the user can input the command `python diary_cli.py edit` to edit a diary entry. 
 
-A prompt will ask for the user to input the integer ID assigned to the diary entry they wish to edit. If no such ID exists, the command fails. 
+A prompt will ask for the user to input the ID assigned to the diary entry they wish to edit. If no such ID exists, the command fails. 
 
-If the ID does exist, First, the user given the choice to update their title. If no updated title is given, the original title will be passed in. A text editor will open in a new window where the user can make edits to the diary entry. Saving the file will update the entry in the database.
+If the ID does exist, the user is given the choice to update their title. If no updated title is given, the original title will be passed in. A text editor will open in a new window where the user can make edits to the diary entry. Saving the file will update the entry in the database.
 
 ### Deleting A Diary Entry
 On the command line interface, the user can input the command `python diary_cli.py delete` to delete a diary entry.
 
-A prompt will ask for the user to input the integer ID assigned to the existing diary entry they wish to delete. If no such ID exists, the command fails.
+A prompt will ask for the user to input the ID assigned to the existing diary entry they wish to delete. If no such ID exists, the command fails.
 
 If the ID does exist, they must confirm that they want to delete the specified entry by typing "Y" or "N". 
 
