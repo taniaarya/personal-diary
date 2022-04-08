@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime
+import uuid
 
 
 class Diary:
@@ -9,7 +10,6 @@ class Diary:
     """
 
     def __init__(self):
-        self.last_id = 0
         self.local_db_path = os.path.join(os.path.abspath('..'), "personal_diary/entry_local_storage.json")
 
     def read_from_db(self):
@@ -43,8 +43,7 @@ class Diary:
         Returns:
              dictionary containing the entry_id of the new entry
         """
-        entry_id = self.last_id + 1
-        self.last_id = entry_id
+        entry_id = str(uuid.uuid4())
         curr_entries = self.read_from_db()
         curr_datetime = datetime.now()
         curr_entries[entry_id] = {
