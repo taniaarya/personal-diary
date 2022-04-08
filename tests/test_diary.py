@@ -125,29 +125,27 @@ class DiaryTestReadEntry(unittest.TestCase):
         with open(self.diary.local_db_path, 'w') as outfile:
             outfile.write("{}")
 
-    def test_read_empty_dictionary_returns_empty(self):
-        self.assertEqual(self.diary.read_entry(), {})
-
     def test_read_populated_db_one_key_returns_correct_dict(self):
         test_dict = {
-            "key1": "value1"
+            "1": {"title": "Title", "body": "Body", "date_created": "12/22/2021", "time_created": "12:23"}
         }
         json_object = json.dumps(test_dict, indent=4)
         with open(self.diary.local_db_path, "w") as outfile:
             outfile.write(json_object)
 
-        self.assertEqual(self.diary.read_entry(), test_dict)
+        self.assertEqual(self.diary.read_entry({"entry_id": "1"}), test_dict["1"])
 
     def test_read_populated_db_multiple_keys_returns_correct_dict(self):
         test_dict = {
-            "key1": "value1",
-            "key2": "value2"
+            "1": {"title": "Title", "body": "Body", "date_created": "12/22/2021", "time_created": "12:23"},
+            "2": {"title": "Title", "body": "Body", "date_created": "12/22/2021", "time_created": "14:23"}
         }
         json_object = json.dumps(test_dict, indent=4)
         with open(self.diary.local_db_path, "w") as outfile:
             outfile.write(json_object)
 
-        self.assertEqual(self.diary.read_entry(), test_dict)
+        self.assertEqual(self.diary.read_entry({"entry_id": "1"}), test_dict["1"])
+        self.assertEqual(self.diary.read_entry({"entry_id": "2"}), test_dict["2"])
 
 
 class DiaryTestUpdateEntry(unittest.TestCase):
