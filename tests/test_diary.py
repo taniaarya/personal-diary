@@ -168,6 +168,43 @@ class DiaryTestUpdateEntry(unittest.TestCase):
         self.assertEqual(expected, result)
 
 
+class DiaryTestDeleteEntry(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.diary = Diary()
+
+    def tearDown(self) -> None:
+        with open(self.diary.local_db_path, 'w') as outfile:
+            outfile.write("{}")
+
+    def test_delete_empties_entries_when_only_one_entry(self):
+        test_dict = {
+            "1": {"title": "title_value"},
+        }
+        json_object = json.dumps(test_dict, indent=4)
+        with open(self.diary.local_db_path, "w") as outfile:
+            outfile.write(json_object)
+        self.assertDictEqual(self.diary.delete_entry({"entry_id": "1"}), {"entry_id": "1"})
+
+        with open(self.diary.local_db_path, "r") as stored_entries:
+            curr_entries = json.load(stored_entries)
+        self.assertDictEqual(curr_entries, {})
+
+    def test_delete_with_two_existing_entries_only_deletes_specified_entry(self):
+        test_dict = {
+            "1": {"title": "title_value"},
+            "2": {"title": "title_value"},
+        }
+        json_object = json.dumps(test_dict, indent=4)
+        with open(self.diary.local_db_path, "w") as outfile:
+            outfile.write(json_object)
+        self.assertDictEqual(self.diary.delete_entry({"entry_id": "1"}), {"entry_id": "1"})
+
+        with open(self.diary.local_db_path, "r") as stored_entries:
+            curr_entries = json.load(stored_entries)
+        self.assertDictEqual(curr_entries, {"2": {"title": "title_value"}})
+
+
 class DiaryTestIsIdInvalid(unittest.TestCase):
     def setUp(self) -> None:
         self.diary = Diary()
