@@ -28,7 +28,7 @@ class Diary:
 
         Args:
              entry_dict: dictionary containing all new entries where the key is the entry_id and the value is
-                           a dictionary containing that entry's title, body, date, and time
+                         a dictionary containing that entry's title, body, date, and time
         """
         with open(self.local_db_path, "w") as stored_entries:
             json.dump(entry_dict, stored_entries, indent=4)
@@ -84,7 +84,21 @@ class Diary:
         return {request["entry_id"]: curr_entries[entry_id]}
 
     def delete_entry(self, request: dict) -> dict:
-        pass
+        """
+        Deletes the entry with the id specified by the request parameter.
+
+        Args:
+            request: a dictionary containing a key-value pair where the value is the id of the entry to delete
+
+        Returns:
+            dictionary containing the id of the entry that was deleted
+        """
+        entry_id = request.get("entry_id")
+        curr_entries = self.read_from_db()
+        curr_entries.pop(entry_id)
+        self.write_to_db(curr_entries)
+
+        return {"entry_id": entry_id}
 
     def is_id_invalid(self, entry_id: int):
         """
