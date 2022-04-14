@@ -1,7 +1,8 @@
 import os
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, render_template, url_for, redirect, flash
 from personal_diary.diary import Diary
 from personal_diary import db
+from personal_diary.forms import CreateEntryForm, UpdateEntryForm
 
 
 def create_app(db_name):
@@ -11,6 +12,7 @@ def create_app(db_name):
 
     flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, db_name)
     flask_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    flask_app.config['SECRET_KEY'] = 'super secret key'
 
     db.init_app(flask_app)
     with flask_app.app_context():
@@ -32,9 +34,25 @@ def create_app(db_name):
     def post_entry():
         return Diary.create_entry(request.get_json())
 
-    @flask_app.route("/diary", methods=["PUT"])
-    def put_entry():
-        return Diary.update_entry(request.get_json())
+    @flask_app.route("/diary/<entry_id>", methods=["GET", "PUT"])
+    def put_entry(entry_id):
+        update_form = UpdateEntryForm()
+        entry = Diary.read_single_entry({"entry_id": entry_id})["entry"]
+        if request.method == 'GET':
+            update_form.title.data = entry.title
+            update_form.body.data = entry.body
+        if update_form.validate_on_submit():
+            update_request = {
+                "title": update_form.title.data,
+                "body": update_form.body.data
+            }
+            Diary.update_entry(update_request)
+            return redirect(url_for("get_all_entries"))
+
+        return render_template(
+            "edit.html",
+            form=update_form,
+        )
 
     @flask_app.route("/diary", methods=["DELETE"])
     def delete_entry():
