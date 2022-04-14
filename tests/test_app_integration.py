@@ -1,20 +1,21 @@
 import json
-import os
 import unittest
 from unittest import TestCase
+from personal_diary import db
 from personal_diary.app import create_app
+from personal_diary.models import Entry
+from personal_diary.diary import Diary
 
 
 class ApplicationTestCaseEndToEnd(TestCase):
     def setUp(self) -> None:
-        flask_app = create_app()
+        flask_app = create_app("test_database.db")
+        flask_app.app_context().push()
         self.client = flask_app.test_client()
-        self.local_db_path = os.path.join(os.path.abspath('..'), "personal_diary/entry_local_storage.json")
 
     def tearDown(self) -> None:
-        self.client = None
-        with open(self.local_db_path, 'w') as outfile:
-            outfile.write("{}")
+        db.session.query(Entry).delete()
+        db.session.commit()
 
     def test_CRUD_operations_sequentially(self):
         response_list = []

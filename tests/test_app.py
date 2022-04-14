@@ -1,21 +1,22 @@
-import json
-import os
 import unittest
 from unittest import TestCase
+from personal_diary import db
 from personal_diary.app import create_app
+from personal_diary.models import Entry
+from personal_diary.diary import Diary
 
 
 class ApplicationTestCaseGETAll(TestCase):
 
     def setUp(self) -> None:
-        flask_app = create_app()
+        flask_app = create_app("test_database.db")
+        flask_app.app_context().push()
         self.client = flask_app.test_client()
-        self.local_db_path = os.path.join(os.path.abspath('..'), "personal_diary/entry_local_storage.json")
 
     def tearDown(self) -> None:
         self.client = None
-        with open(self.local_db_path, 'w') as outfile:
-            outfile.write("{}")
+        db.session.query(Entry).delete()
+        db.session.commit()
 
     def test_get_can_send_json(self):
         response = self.client.get("/diary")
@@ -33,19 +34,15 @@ class ApplicationTestCaseGETAll(TestCase):
 class ApplicationTestCaseGET(TestCase):
 
     def setUp(self) -> None:
-        flask_app = create_app()
+        flask_app = create_app("test_database.db")
+        flask_app.app_context().push()
         self.client = flask_app.test_client()
-        self.local_db_path = os.path.join(os.path.abspath('..'), "personal_diary/entry_local_storage.json")
-        with open(self.local_db_path, 'w') as outfile:
-            fake_data = {"1": {"title": "Title", "body": "Body", "date_created": "12/13/2021", "time_created": "12:14"}}
-            outfile.write(json.dumps(fake_data))
-
-        self.entry_id = "1"
+        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body"}).get("entry_id")
 
     def tearDown(self) -> None:
         self.client = None
-        with open(self.local_db_path, 'w') as outfile:
-            outfile.write("{}")
+        db.session.query(Entry).delete()
+        db.session.commit()
 
     def test_get_can_send_json(self):
         response = self.client.get(f'/diary/{self.entry_id}')
@@ -62,14 +59,14 @@ class ApplicationTestCaseGET(TestCase):
 
 class ApplicationTestCasePOST(TestCase):
     def setUp(self) -> None:
-        flask_app = create_app()
+        flask_app = create_app("test_database.db")
+        flask_app.app_context().push()
         self.client = flask_app.test_client()
-        self.local_db_path = os.path.join(os.path.abspath('..'), "personal_diary/entry_local_storage.json")
 
     def tearDown(self) -> None:
         self.client = None
-        with open(self.local_db_path, 'w') as outfile:
-            outfile.write("{}")
+        db.session.query(Entry).delete()
+        db.session.commit()
 
     def test_post_can_send_json(self):
         valid_request_json = {"title": "Title", "body": "Body"}
@@ -84,36 +81,37 @@ class ApplicationTestCasePOST(TestCase):
 
 class ApplicationTestCasePUT(TestCase):
     def setUp(self) -> None:
-        flask_app = create_app()
+        flask_app = create_app("test_database.db")
+        flask_app.app_context().push()
         self.client = flask_app.test_client()
-        self.local_db_path = os.path.join(os.path.abspath('..'), "personal_diary/entry_local_storage.json")
+        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body"}).get("entry_id")
 
     def tearDown(self) -> None:
         self.client = None
-        with open(self.local_db_path, 'w') as outfile:
-            outfile.write("{}")
+        db.session.query(Entry).delete()
+        db.session.commit()
 
     def test_put_can_send_json(self):
-        valid_request_json = {"title": "Title", "body": "Body", "entry_id": "1"}
+        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id}
         response = self.client.put("/diary", json=valid_request_json)
         self.assertTrue(response is not None, True)
 
     def test_put_valid_json_returns_success_response(self):
-        valid_request_json = {"title": "Title", "body": "Body", "entry_id": "1"}
+        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id}
         response = self.client.put("/diary", json=valid_request_json)
         self.assertTrue(response.status_code, 200)
 
 
 class ApplicationTestCaseDELETE(TestCase):
     def setUp(self) -> None:
-        flask_app = create_app()
+        flask_app = create_app("test_database.db")
+        flask_app.app_context().push()
         self.client = flask_app.test_client()
-        self.local_db_path = os.path.join(os.path.abspath('..'), "personal_diary/entry_local_storage.json")
 
     def tearDown(self) -> None:
         self.client = None
-        with open(self.local_db_path, 'w') as outfile:
-            outfile.write("{}")
+        db.session.query(Entry).delete()
+        db.session.commit()
 
     def test_delete_can_send_json(self):
         response = self.client.delete("/diary")
