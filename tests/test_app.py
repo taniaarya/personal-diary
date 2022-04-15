@@ -15,7 +15,7 @@ class ApplicationTestCaseGETAll(TestCase):
 
     def tearDown(self) -> None:
         self.client = None
-        db.session.query(Entry).delete()
+        db.session.delete()
         db.session.commit()
 
     def test_get_can_send_json(self):
@@ -57,7 +57,27 @@ class ApplicationTestCaseGET(TestCase):
         self.assertTrue(response.get_data())
 
 
-class ApplicationTestCasePOST(TestCase):
+class ApplicationTestCaseCreateEntryGET(TestCase):
+    def setUp(self) -> None:
+        flask_app = create_app("test_database.db")
+        flask_app.app_context().push()
+        self.client = flask_app.test_client()
+
+    def tearDown(self) -> None:
+        self.client = None
+        db.session.delete()
+        db.session.commit()
+
+    def test_get_can_send_json(self):
+        response = self.client.get('/create')
+        self.assertTrue(response is not None, True)
+
+    def test_get_valid_json_returns_success_response_get(self):
+        response = self.client.get('/create')
+        self.assertTrue(response.status_code, 200)
+
+
+class ApplicationTestCaseCreateEntryPOST(TestCase):
     def setUp(self) -> None:
         flask_app = create_app("test_database.db")
         flask_app.app_context().push()
@@ -69,13 +89,11 @@ class ApplicationTestCasePOST(TestCase):
         db.session.commit()
 
     def test_post_can_send_json(self):
-        valid_request_json = {"title": "Title", "body": "Body"}
-        response = self.client.post("/diary", json=valid_request_json)
+        response = self.client.post("/create")
         self.assertTrue(response is not None, True)
 
     def test_post_valid_json_returns_success_response(self):
-        valid_request_json = {"title": "Title", "body": "Body"}
-        response = self.client.post("/diary", json=valid_request_json)
+        response = self.client.post("/create")
         self.assertTrue(response.status_code, 200)
 
 
