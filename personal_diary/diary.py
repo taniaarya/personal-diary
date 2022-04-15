@@ -35,7 +35,7 @@ class Diary:
     @staticmethod
     def read_single_entry(request: dict) -> dict:
         """
-        Reads all current diary entries from the database and pretty prints them.
+        Reads single diary entry from the database.
 
         Args:
             request: a dictionary a single key, "entry_id" whose value is the id of the entry to be read

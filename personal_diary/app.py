@@ -22,7 +22,11 @@ def create_app(db_name):
 
     @flask_app.route("/diary", methods=["GET"])
     def get_all_entries():
-        return Diary.read_all_entries()
+        """
+        Renders the screen showing a list of the current entries.
+        """
+        curr_entries = Diary.read_all_entries()
+        return render_template("index.html", curr_entries=curr_entries)
 
     @flask_app.route("/diary/<entry_id>", methods=["GET"])
     def get_entry(entry_id):
