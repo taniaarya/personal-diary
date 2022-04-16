@@ -3,10 +3,13 @@ from flask import Flask, request, render_template, url_for, redirect, flash
 from personal_diary.diary import Diary
 from personal_diary import db
 from personal_diary.forms import CreateEntryForm
+from flask_ckeditor import CKEditor
 
 
 def create_app(db_name):
     flask_app = Flask(__name__)
+    # Add CKEditor
+    ckeditor = CKEditor(flask_app)
 
     basedir = os.path.abspath(os.path.dirname(__file__))
 

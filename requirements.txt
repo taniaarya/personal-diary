@@ -3,3 +3,5 @@ Flask~=2.1.1
 Flask-SQLAlchemy~=2.5.1
 Flask-Login
 Flask-WTF
+flask-ckeditor
+WTForms~=3.0.1
