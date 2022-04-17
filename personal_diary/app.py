@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, render_template, render_template, url_for, redirect, flash
+from flask import Flask, request, render_template, url_for, redirect
 from personal_diary.diary import Diary
 from personal_diary import db
 from personal_diary.forms import CreateEntryForm, UpdateEntryForm
@@ -24,17 +24,33 @@ def create_app(db_name):
 
     @flask_app.route("/diary", methods=["GET"])
     def get_all_entries():
-        return Diary.read_all_entries()
+        """
+        Renders the screen showing a list of the current entries.
+        """
+        curr_entries = Diary.read_all_entries()
+        return render_template("index.html", curr_entries=curr_entries)
 
     @flask_app.route("/diary/<entry_id>", methods=["GET"])
     def get_entry(entry_id):
         return Diary.read_single_entry({"entry_id": entry_id})
 
-    @flask_app.route("/create")
-    def post_entry():
-        return Diary.create_entry(request.get_json())
+    @flask_app.route("/create", methods=['GET', 'POST'])
+    def create_entry():
+        create_form = CreateEntryForm()
+        if create_form.validate_on_submit():
+            create_request = {
+                "title": create_form.title.data,
+                "body": create_form.body.data
+            }
+            Diary.create_entry(create_request)
+            return redirect(url_for("get_all_entries"))
 
-    @flask_app.route("/diary/<entry_id>", methods=["GET", "PUT"])
+        return render_template(
+            "create.html",
+            form=create_form,
+        )
+
+    @flask_app.route("/diary/edit/<entry_id>", methods=["GET", "POST"])
     def put_entry(entry_id):
         update_form = UpdateEntryForm()
         entry = Diary.read_single_entry({"entry_id": entry_id})["entry"]
@@ -43,6 +59,7 @@ def create_app(db_name):
             update_form.body.data = entry.body
         if update_form.validate_on_submit():
             update_request = {
+                "entry_id": entry_id,
                 "title": update_form.title.data,
                 "body": update_form.body.data
             }
@@ -51,7 +68,7 @@ def create_app(db_name):
 
         return render_template(
             "edit.html",
-            form=update_form,
+            form=update_form, entry=entry
         )
 
     @flask_app.route("/diary", methods=["DELETE"])
@@ -64,4 +81,3 @@ def create_app(db_name):
 if __name__ == '__main__':
     app = create_app("database.db")
     app.run(debug=True)
-

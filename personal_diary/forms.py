@@ -9,8 +9,8 @@ class CreateEntryForm(FlaskForm):
                         render_kw={'class': 'col-md-10'}
                         )
     body = TextAreaField('Course Description',
-                         validators=[InputRequired(), Length(min=1, max=300)],
-                         render_kw={'class': 'col-md-10', 'rows': '10'}
+                         validators=[InputRequired(), Length(min=1, max=80)],
+                         render_kw={'class': 'col-md-10'}
                          )
     submit = SubmitField("Create Entry")
 
