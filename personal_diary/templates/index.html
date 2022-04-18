@@ -2,11 +2,16 @@
 
 {% block content %}
 <div>
-    {% if curr_entries|length == 0 %}
+    <form method="post" action="" style="max-width:600px">
+        {{ form.search }}
+        {{ form.submit }}
+    </form>
+
+    {% if entries|length == 0 %}
         <p>There are no entries.</p>
     {% else %}
-        <p class="text-secondary" style="font-size: 16px">Entries: {{curr_entries|length}}</p>
-        {% for entry_id, entry in curr_entries.items()|reverse %}
+        <p class="text-secondary" style="font-size: 16px">Entries: {{entries|length}}</p>
+        {% for entry_id, entry in entries.items()|reverse %}
             <div style="width: 800px">
                     <a style="font-size: 18px" href='/diary/{{entry_id}}'>{{entry.title}}</a>
                     <p style="font-size: 16px" class="mb-4">Created: {{entry.created.replace(microsecond=0)}}</p>
