@@ -13,7 +13,7 @@
         <p class="text-secondary" style="font-size: 16px">Entries: {{entries|length}}</p>
         {% for entry_id, entry in entries.items()|reverse %}
             <div style="width: 800px">
-                    <a style="font-size: 18px" href='/diary/{{entry_id}}'>{{entry.title}}</a>
+                    <a style="font-size: 18px" href="{{ url_for('get_entry', entry_id=entry.id) }}">{{entry.title}}</a>
                     <p style="font-size: 16px" class="mb-4">Created: {{entry.created.replace(microsecond=0)}}</p>
             </div>
         {% endfor %}

@@ -24,11 +24,7 @@ def create_app(db_name):
     with flask_app.app_context():
         db.create_all()
 
-    @flask_app.route("/")
-    def home_page():
-        return render_template("base.html")
-
-    @flask_app.route("/diary", methods=['GET', 'POST'])
+    @flask_app.route("/", methods=['GET', 'POST'])
     def get_all_entries():
         """
         Renders the screen showing a list of the current entries or entries matching the user's search query.
@@ -41,8 +37,8 @@ def create_app(db_name):
         all_entries = Diary.read_all_entries()
         return render_template("index.html", entries=all_entries, form=search_form)
 
-    @flask_app.route("/diary/<entry_id>", methods=['GET'])
-    def get_entry(entry_id):
+    @flask_app.route("/entry/<entry_id>", methods=['GET'])
+    def get_entry(entry_id: str):
         entry = Diary.read_single_entry({"entry_id": entry_id})["entry"]
         return render_template("read_entry.html", entry=entry, entry_id=entry_id)
 
@@ -62,8 +58,8 @@ def create_app(db_name):
             form=create_form,
         )
 
-    @flask_app.route("/diary/edit/<entry_id>", methods=["GET", "POST"])
-    def put_entry(entry_id):
+    @flask_app.route("/edit/<entry_id>", methods=["GET", "POST"])
+    def edit_entry(entry_id: str):
         update_form = UpdateEntryForm()
         entry = Diary.read_single_entry({"entry_id": entry_id})["entry"]
         if request.method == 'GET':
@@ -83,8 +79,8 @@ def create_app(db_name):
             form=update_form, entry=entry
         )
 
-    @flask_app.route("/diary", methods=['DELETE'])
-    def delete_entry():
+    @flask_app.route("/delete/<entry_id>", methods=['DELETE'])
+    def delete_entry(entry_id: str):
         return Diary.delete_entry(request.get_json())
 
     @flask_app.route("/signup", methods=["GET", "POST"])

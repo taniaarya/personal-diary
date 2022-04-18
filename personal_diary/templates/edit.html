@@ -4,7 +4,7 @@
 <div class="form-wrapper">
     <h2 class="title">Edit Current Entry</h2>
 
-    <form method="POST" action="{{ url_for('put_entry', entry_id=entry.id) }}">
+    <form method="POST" action="{{ url_for('edit_entry', entry_id=entry.id) }}">
 
       {{ form.csrf_token }}
 
@@ -35,5 +35,7 @@
       {{ form.submit }}
 
       </form>
+      {{ ckeditor.load() }}
+      {{ ckeditor.config(name='body') }}
   </div>
 {% endblock %}

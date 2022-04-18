@@ -19,19 +19,15 @@ class ApplicationTestCaseGETAll(TestCase):
         db.session.commit()
 
     def test_get_can_send_json(self):
-        response = self.client.get("/diary")
+        response = self.client.get("/")
         self.assertTrue(response is not None, True)
 
     def test_get_valid_json_returns_success_response_get(self):
-        response = self.client.get("/diary")
+        response = self.client.get("/")
         self.assertTrue(response.status_code, 200)
 
-    def test_get_valid_json_returns_correct_keys_for_(self):
-        response = self.client.get("/diary")
-        self.assertTrue(response.get_data())
 
-
-class ApplicationTestCaseGET(TestCase):
+class ApplicationTestCaseEntryGET(TestCase):
 
     def setUp(self) -> None:
         flask_app = create_app("test_database.db")
@@ -45,15 +41,15 @@ class ApplicationTestCaseGET(TestCase):
         db.session.commit()
 
     def test_get_can_send_json(self):
-        response = self.client.get(f'/diary/{self.entry_id}')
+        response = self.client.get(f'/entry/{self.entry_id}')
         self.assertTrue(response is not None, True)
 
     def test_get_valid_json_returns_success_response_get(self):
-        response = self.client.get(f'/diary/{self.entry_id}')
+        response = self.client.get(f'/entry/{self.entry_id}')
         self.assertTrue(response.status_code, 200)
 
     def test_get_valid_json_returns_correct_keys_for_(self):
-        response = self.client.get(f'/diary/{self.entry_id}')
+        response = self.client.get(f'/entry/{self.entry_id}')
         self.assertTrue(response.get_data())
 
 
@@ -97,7 +93,7 @@ class ApplicationTestCaseCreateEntryPOST(TestCase):
         self.assertTrue(response.status_code, 200)
 
 
-class ApplicationTestCaseUpdateEntryGet(TestCase):
+class ApplicationTestCaseUpdateEntryGET(TestCase):
     def setUp(self) -> None:
         flask_app = create_app("test_database.db")
         flask_app.app_context().push()
@@ -111,16 +107,16 @@ class ApplicationTestCaseUpdateEntryGet(TestCase):
 
     def test_put_can_send_json(self):
         valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id}
-        response = self.client.get("/diary/edit/{}".format(self.entry_id), json=valid_request_json)
+        response = self.client.get("/edit/{}".format(self.entry_id), json=valid_request_json)
         self.assertTrue(response is not None, True)
 
     def test_put_valid_json_returns_success_response(self):
         valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id}
-        response = self.client.get("/diary/edit/{}".format(self.entry_id), json=valid_request_json)
+        response = self.client.get("/edit/{}".format(self.entry_id), json=valid_request_json)
         self.assertTrue(response.status_code, 200)
 
 
-class ApplicationTestCaseUpdateEntryPost(TestCase):
+class ApplicationTestCaseUpdateEntryPOST(TestCase):
     def setUp(self) -> None:
         flask_app = create_app("test_database.db")
         flask_app.app_context().push()
@@ -134,33 +130,33 @@ class ApplicationTestCaseUpdateEntryPost(TestCase):
 
     def test_put_can_send_json(self):
         valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id}
-        response = self.client.post("/diary/edit/{}".format(self.entry_id), json=valid_request_json)
+        response = self.client.post("/edit/{}".format(self.entry_id), json=valid_request_json)
         self.assertTrue(response is not None, True)
 
     def test_put_valid_json_returns_success_response(self):
         valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id}
-        response = self.client.post("/diary/edit/{}".format(self.entry_id), json=valid_request_json)
+        response = self.client.post("/edit/{}".format(self.entry_id), json=valid_request_json)
         self.assertTrue(response.status_code, 200)
 
 
-class ApplicationTestCaseDELETE(TestCase):
-    def setUp(self) -> None:
-        flask_app = create_app("test_database.db")
-        flask_app.app_context().push()
-        self.client = flask_app.test_client()
-
-    def tearDown(self) -> None:
-        self.client = None
-        db.session.query(Entry).delete()
-        db.session.commit()
-
-    def test_delete_can_send_json(self):
-        response = self.client.delete("/diary")
-        self.assertTrue(response is not None, True)
-
-    def test_delete_valid_json_returns_success_response(self):
-        response = self.client.delete("/diary")
-        self.assertTrue(response.status_code, 200)
+# class ApplicationTestCaseDELETE(TestCase):
+#     def setUp(self) -> None:
+#         flask_app = create_app("test_database.db")
+#         flask_app.app_context().push()
+#         self.client = flask_app.test_client()
+#
+#     def tearDown(self) -> None:
+#         self.client = None
+#         db.session.query(Entry).delete()
+#         db.session.commit()
+#
+#     def test_delete_can_send_json(self):
+#         response = self.client.delete("/delete")
+#         self.assertTrue(response is not None, True)
+#
+#     def test_delete_valid_json_returns_success_response(self):
+#         response = self.client.delete("/delete")
+#         self.assertTrue(response.status_code, 200)
 
 
 if __name__ == '__main__':
