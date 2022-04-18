@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="title">{{entry.title}} </h2>
+
+<div style="width: 800px">
+    <p style="font-size: 16px" class="mb-4">Created: {{entry.created.replace(microsecond=0)}}</p>
+    <a href='/diary/delete/{{entry_id}}' class="btn btn-danger" role="button">Delete</a>
+    <a href='/diary/edit/{{entry_id}}' class="btn btn-primary" role="button">Edit</a>
+    <br>
+    <br>
+
+    <div class="card">
+        <div class="card-body">
+            {{entry.body}}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
