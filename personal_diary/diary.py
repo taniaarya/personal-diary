@@ -103,18 +103,26 @@ class Diary:
 
         return {"entry_id": entry_id}
 
-    # @staticmethod
-    # def is_id_invalid(entry_id: int):
-    #     """
-    #     Checks whether an id matches an existing diary entry or not.
-    #
-    #     Args:
-    #         entry_id: an int which represents the id of a diary entry
-    #
-    #     Returns:
-    #          is_invalid: boolean representing if the id is invalid or not. The value is true if the id is invalid,
-    #          meaning that it does not match an existing diary entry. The value is false if the id is valid, meaning that
-    #          it does match an existing entry.
-    #     """
-    #     saved_entries = self.read_from_db()
-    #     return str(entry_id) not in saved_entries.keys()
+    @staticmethod
+    def search_entries(search_query: str) -> dict:
+        """
+        Returns entries that contain the keywords in the search query. The search is not case-sensitive.
+        An entry matches the search query if it contains all keywords in its title or body text.
+
+        Args:
+            search_query: a string containing keywords to search for in the query. For example, a string of
+            "apple pear" has two keywords of "apple" and "pear".
+
+        Returns:
+            dictionary containing the entries that match the search query
+        """
+        matching_entries = Entry.query.filter()
+        for keyword in search_query.split(' '):
+            matching_entries = matching_entries.filter(Entry.title.ilike("%" + keyword + "%") |
+                                                       Entry.body.ilike("%" + keyword + "%"))
+
+        entry_dict = {}
+        for entry in matching_entries:
+            entry_dict[entry.id] = entry
+
+        return entry_dict

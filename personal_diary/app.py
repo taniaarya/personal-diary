@@ -1,12 +1,11 @@
 import os
-from flask import Flask, request, render_template, url_for, redirect
+from flask import Flask, request, render_template, url_for, redirect, flash
 from personal_diary.diary import Diary
 from personal_diary import db
-from personal_diary.forms import CreateEntryForm, UpdateEntryForm , SignupForm
+from personal_diary.forms import CreateEntryForm, UpdateEntryForm, SignupForm, SearchEntryForm
 from personal_diary.models import User
 from personal_diary.diary_user import DiaryUser
 from werkzeug.security import generate_password_hash, check_password_hash
-from personal_diary.forms import CreateEntryForm
 from flask_ckeditor import CKEditor
 
 
@@ -29,13 +28,18 @@ def create_app(db_name):
     def home_page():
         return render_template("base.html")
 
-    @flask_app.route("/diary", methods=["GET"])
+    @flask_app.route("/diary", methods=['GET', 'POST'])
     def get_all_entries():
         """
-        Renders the screen showing a list of the current entries.
+        Renders the screen showing a list of the current entries or entries matching the user's search query.
         """
-        curr_entries = Diary.read_all_entries()
-        return render_template("index.html", curr_entries=curr_entries)
+        search_form = SearchEntryForm()
+        if request.method == 'POST':
+            search_query = search_form.data["search"]
+            return render_template("index.html", entries=Diary.search_entries(search_query), form=search_form)
+
+        all_entries = Diary.read_all_entries()
+        return render_template("index.html", entries=all_entries, form=search_form)
 
     @flask_app.route("/diary/<entry_id>", methods=['GET'])
     def get_entry(entry_id):
@@ -79,7 +83,7 @@ def create_app(db_name):
             form=update_form, entry=entry
         )
 
-    @flask_app.route("/diary", methods=["DELETE"])
+    @flask_app.route("/diary", methods=['DELETE'])
     def delete_entry():
         return Diary.delete_entry(request.get_json())
 

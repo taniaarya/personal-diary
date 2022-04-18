@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SubmitField, PasswordField
+from wtforms import StringField, TextAreaField, SubmitField, PasswordField, SearchField
 from wtforms.validators import InputRequired, Length
 from flask_ckeditor import CKEditorField
 
@@ -15,6 +15,11 @@ class CreateEntryForm(FlaskForm):
                          )
 
     submit = SubmitField("Create Entry")
+
+
+class SearchEntryForm(FlaskForm):
+    search = SearchField('')
+    submit = SubmitField("Search")
 
 
 class UpdateEntryForm(FlaskForm):
