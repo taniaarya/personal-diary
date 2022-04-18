@@ -1,5 +1,9 @@
+import json
 from datetime import datetime
 import uuid
+
+from flask import jsonify
+
 from personal_diary.models import Entry
 from personal_diary import db
 
@@ -43,7 +47,8 @@ class Diary:
             a dictionary containing a key "entry" with of a value of type Entry. The Entry has information about the
             title, body, date_created, and time_created of the requested entry_id
         """
-        return {"entry": Entry.query.get(request["entry_id"])}
+        entry = Entry.query.get_or_404(request["entry_id"])
+        return {"entry": entry}
 
     @staticmethod
     def read_all_entries() -> dict:

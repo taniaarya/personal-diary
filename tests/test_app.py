@@ -15,7 +15,7 @@ class ApplicationTestCaseGETAll(TestCase):
 
     def tearDown(self) -> None:
         self.client = None
-        db.session.delete()
+        db.session.query(Entry).delete()
         db.session.commit()
 
     def test_get_can_send_json(self):
@@ -65,7 +65,7 @@ class ApplicationTestCaseCreateEntryGET(TestCase):
 
     def tearDown(self) -> None:
         self.client = None
-        db.session.delete()
+        db.session.query(Entry).delete()
         db.session.commit()
 
     def test_get_can_send_json(self):

@@ -1,3 +1,5 @@
+import json
+
 from personal_diary import db
 
 
@@ -23,10 +25,10 @@ class User(db.Model):
 
     __tablename__ = 'Users'
 
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
-    name = db.Column(db.String(1000))
+    id = db.Column(db.String(), primary_key=True)
+    username = db.Column(db.String(15), unique=True)
+    name = db.Column(db.String(30))
+    password = db.Column(db.String(15))
     # entries = db.relationship('Entry', backref='Users', lazy=True)
 
     def __repr__(self):
