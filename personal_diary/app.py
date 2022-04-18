@@ -33,9 +33,10 @@ def create_app(db_name):
         curr_entries = Diary.read_all_entries()
         return render_template("index.html", curr_entries=curr_entries)
 
-    @flask_app.route("/diary/<entry_id>", methods=["GET"])
+    @flask_app.route("/diary/<entry_id>", methods=['GET'])
     def get_entry(entry_id):
-        return Diary.read_single_entry({"entry_id": entry_id})
+        entry = Diary.read_single_entry({"entry_id": entry_id})["entry"]
+        return render_template("read_entry.html", entry=entry, entry_id=entry_id)
 
     @flask_app.route("/create", methods=['GET', 'POST'])
     def create_entry():
@@ -96,4 +97,3 @@ def create_app(db_name):
 if __name__ == '__main__':
     app = create_app("database.db")
     app.run(debug=True)
-
