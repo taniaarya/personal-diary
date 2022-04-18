@@ -6,10 +6,14 @@ from personal_diary.forms import CreateEntryForm, UpdateEntryForm , SignupForm
 from personal_diary.models import User
 from personal_diary.diary_user import DiaryUser
 from werkzeug.security import generate_password_hash, check_password_hash
+from personal_diary.forms import CreateEntryForm
+from flask_ckeditor import CKEditor
 
 
 def create_app(db_name):
     flask_app = Flask(__name__)
+    # Add CKEditor
+    ckeditor = CKEditor(flask_app)
 
     basedir = os.path.abspath(os.path.dirname(__file__))
 

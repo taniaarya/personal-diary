@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SubmitField, PasswordField
 from wtforms.validators import InputRequired, Length
+from flask_ckeditor import CKEditorField
 
 
 class CreateEntryForm(FlaskForm):
@@ -8,10 +9,11 @@ class CreateEntryForm(FlaskForm):
                         validators=[InputRequired(), Length(min=1, max=300)],
                         render_kw={'class': 'col-md-10'}
                         )
-    body = TextAreaField('Course Description',
-                         validators=[InputRequired(), Length(min=1, max=80)],
-                         render_kw={'class': 'col-md-10'}
+    body = CKEditorField('Body',
+                         validators=[InputRequired(), Length(min=1, max=300)],
+                         render_kw={'class': 'col-md-10', 'rows': '10'}
                          )
+
     submit = SubmitField("Create Entry")
 
 
@@ -21,8 +23,8 @@ class UpdateEntryForm(FlaskForm):
                         render_kw={'class': 'col-md-10'}
                         )
     body = TextAreaField('Course Description',
-                         validators=[InputRequired(), Length(min=1, max=300)],
-                         render_kw={'class': 'col-md-10', 'rows': '10'}
+                         validators=[InputRequired(), Length(min=1, max=80)],
+                         render_kw={'class': 'col-md-10'}
                          )
     submit = SubmitField("Save Changes")
 
