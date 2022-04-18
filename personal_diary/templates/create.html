@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
   <div class="form-wrapper">
     <h2 class="title">Add a New Entry</h2>
 
@@ -36,6 +35,8 @@
       {{ form.submit }}
 
       </form>
+    {{ ckeditor.load() }}
+    {{ ckeditor.config(name='body') }}
   </div>
 
 {% endblock %}
