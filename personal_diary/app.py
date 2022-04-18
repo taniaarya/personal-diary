@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, render_template, url_for, redirect
+from flask import Flask, request, render_template, url_for, redirect, flash
 from personal_diary.diary import Diary
 from personal_diary import db
 from personal_diary.forms import CreateEntryForm, UpdateEntryForm , SignupForm

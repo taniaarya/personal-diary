@@ -40,3 +40,4 @@ class SignupForm(FlaskForm):
                              validators=[InputRequired(), Length(min=8, max=15)]
                              )
     submit = SubmitField("Sign Up")
+
