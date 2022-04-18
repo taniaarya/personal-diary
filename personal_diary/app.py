@@ -1,8 +1,8 @@
 import os
-from flask import Flask, request, render_template, url_for, redirect, flash
+from flask import Flask, request, render_template, url_for, redirect
 from personal_diary.diary import Diary
 from personal_diary import db
-from personal_diary.forms import CreateEntryForm, SignupForm
+from personal_diary.forms import CreateEntryForm, UpdateEntryForm , SignupForm
 from personal_diary.models import User
 from personal_diary.diary_user import DiaryUser
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -54,9 +54,26 @@ def create_app(db_name):
             form=create_form,
         )
 
-    @flask_app.route("/diary", methods=["PUT"])
-    def put_entry():
-        return Diary.update_entry(request.get_json())
+    @flask_app.route("/diary/edit/<entry_id>", methods=["GET", "POST"])
+    def put_entry(entry_id):
+        update_form = UpdateEntryForm()
+        entry = Diary.read_single_entry({"entry_id": entry_id})["entry"]
+        if request.method == 'GET':
+            update_form.title.data = entry.title
+            update_form.body.data = entry.body
+        if update_form.validate_on_submit():
+            update_request = {
+                "entry_id": entry_id,
+                "title": update_form.title.data,
+                "body": update_form.body.data
+            }
+            Diary.update_entry(update_request)
+            return redirect(url_for("get_all_entries"))
+
+        return render_template(
+            "edit.html",
+            form=update_form, entry=entry
+        )
 
     @flask_app.route("/diary", methods=["DELETE"])
     def delete_entry():
