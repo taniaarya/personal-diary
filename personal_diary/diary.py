@@ -1,9 +1,5 @@
-import json
 from datetime import datetime
 import uuid
-
-from flask import jsonify
-
 from personal_diary.models import Entry
 from personal_diary import db
 
