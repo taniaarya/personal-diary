@@ -35,7 +35,7 @@
       {{ form.submit }}
 
       </form>
-    {{ ckeditor.load() }}
+    {{ ckeditor.load(custom_url=url_for('static', filename='ckeditor/ckeditor.js')) }}
     {{ ckeditor.config(name='body') }}
   </div>
 
