@@ -1,6 +1,5 @@
 import os
-from flask import Flask, request, render_template, url_for, redirect, flash
-from flask import Markup
+from flask import Flask, Markup, request, render_template, url_for, redirect, flash
 
 from personal_diary.diary import Diary
 from personal_diary import db
@@ -81,9 +80,15 @@ def create_app(db_name):
             form=update_form, entry=entry
         )
 
-    @flask_app.route("/delete/<entry_id>", methods=['DELETE'])
+    @flask_app.route("/delete/<entry_id>", methods=['GET'])
     def delete_entry(entry_id: str):
-        return Diary.delete_entry(request.get_json())
+        """
+        Deletes the entry with the given entry_id which is passed in through the URL. It redirects back to the
+        home screen showing the list of existing entries.
+        """
+        Diary.delete_entry({"entry_id": entry_id})
+        flash("Entry deleted!", "alert-success")
+        return redirect(url_for("get_all_entries"))
 
     @flask_app.route("/signup", methods=["GET", "POST"])
     def signup():
