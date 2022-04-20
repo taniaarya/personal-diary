@@ -1,7 +1,8 @@
 from personal_diary import db
+from flask_login import UserMixin
 
 
-class Entry(db.Model):
+class Entry(UserMixin, db.Model):
     """Data model for diary entries"""
 
     __tablename__ = 'DiaryEntries'
@@ -12,13 +13,13 @@ class Entry(db.Model):
     created = db.Column(db.DateTime, unique=False, nullable=False)
     modified = db.Column(db.DateTime, unique=False, nullable=True)
     folder = db.Column(db.String(), unique=False, nullable=True)
-    # user_id = db.Column(db.Integer, db.ForeignKey('Users.id'), nullable=False)
+    user_id = db.Column(db.String(), db.ForeignKey('Users.id'), nullable=False)
 
     def __repr__(self):
         return '<Entry {}>'.format(self.id)
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     """Data model for users"""
 
     __tablename__ = 'Users'
@@ -27,7 +28,7 @@ class User(db.Model):
     username = db.Column(db.String(15), unique=True)
     name = db.Column(db.String(30))
     password = db.Column(db.String(15))
-    # entries = db.relationship('Entry', backref='Users', lazy=True)
+    entries = db.relationship('Entry', backref='Users', lazy=True)
 
     def __repr__(self):
         return '<User {}>'.format(self.id)

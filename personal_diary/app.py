@@ -1,10 +1,10 @@
 import os
-from flask import Flask, Markup, request, render_template, url_for, redirect, flash
-
+from flask import Flask, Markup, render_template, url_for, redirect, flash, abort
+from flask_login import LoginManager, login_user, current_user
 from personal_diary.diary import Diary
 from personal_diary import db
 from personal_diary.forms import CreateEntryForm, UpdateEntryForm, SignupForm, SearchEntryForm, LoginForm
-from personal_diary.models import User
+from personal_diary.models import User, Entry
 from personal_diary.diary_user import DiaryUser
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_ckeditor import CKEditor
@@ -21,6 +21,14 @@ def create_app(db_name):
     flask_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     flask_app.config['SECRET_KEY'] = 'super secret key'
 
+    login_manager = LoginManager()
+    login_manager.login_view = 'login'
+    login_manager.init_app(flask_app)
+
+    @login_manager.user_loader
+    def load_user(user_id: str):
+        return User.query.get(user_id)
+
     db.init_app(flask_app)
     with flask_app.app_context():
         db.create_all()
@@ -31,16 +39,25 @@ def create_app(db_name):
         Renders the screen showing a list of the current entries or entries matching the user's search query.
         """
         search_form = SearchEntryForm()
-        if request.method == 'POST':
+        if search_form.validate_on_submit():
             search_query = search_form.data["search"]
-            return render_template("index.html", entries=Diary.search_entries(search_query), form=search_form)
+            return render_template("index.html",
+                                   entries=Diary.search_entries(search_query, current_user.id),
+                                   form=search_form)
 
-        all_entries = Diary.read_all_entries()
+        all_entries = Diary.read_all_entries(current_user.id)
         return render_template("index.html", entries=all_entries, form=search_form)
 
     @flask_app.route("/entry/<entry_id>", methods=['GET'])
     def get_entry(entry_id: str):
-        entry = Diary.read_single_entry({"entry_id": entry_id})["entry"]
+        read_request = {
+            "entry_id": entry_id,
+            "user_id": current_user.id
+        }
+        entry = Diary.read_single_entry(read_request)["entry"]
+        if entry.user_id != current_user.id:
+            abort(404)
+
         return render_template("read_entry.html", entry=entry, entry_id=entry_id)
 
     @flask_app.route("/create", methods=['GET', 'POST'])
@@ -49,31 +66,36 @@ def create_app(db_name):
         if create_form.validate_on_submit():
             create_request = {
                 "title": create_form.title.data,
-                "body": create_form.body.data
+                "body": create_form.body.data,
+                "user_id": current_user.id
             }
             Diary.create_entry(create_request)
             return redirect(url_for("get_all_entries"))
 
         return render_template(
             "create.html",
-            form=create_form,
+            form=create_form
         )
 
     @flask_app.route("/edit/<entry_id>", methods=["GET", "POST"])
     def edit_entry(entry_id: str):
+        entry = Entry.query.get_or_404(entry_id)
+        if entry.user_id != current_user.id:
+            abort(404)
+
         update_form = UpdateEntryForm()
-        entry = Diary.read_single_entry({"entry_id": entry_id})["entry"]
-        if request.method == 'GET':
-            update_form.title.data = entry.title
-            update_form.body.data = entry.body
         if update_form.validate_on_submit():
             update_request = {
                 "entry_id": entry_id,
                 "title": update_form.title.data,
-                "body": update_form.body.data
+                "body": update_form.body.data,
+                "user_id": current_user.id
             }
             Diary.update_entry(update_request)
             return redirect(url_for("get_all_entries"))
+
+        update_form.title.data = entry.title
+        update_form.body.data = entry.body
 
         return render_template(
             "edit.html",
@@ -86,6 +108,10 @@ def create_app(db_name):
         Deletes the entry with the given entry_id which is passed in through the URL. It redirects back to the
         home screen showing the list of existing entries.
         """
+        entry = Entry.query.get_or_404(entry_id)
+        if entry.user_id != current_user.id:
+            abort(404)
+
         Diary.delete_entry({"entry_id": entry_id})
         flash("Entry deleted!", "alert-success")
         return redirect(url_for("get_all_entries"))
@@ -141,6 +167,7 @@ def create_app(db_name):
 
             # if success display success message and redirect to home page
             flash("Login success!", "alert-success")
+            login_user(user)
             return redirect(url_for("get_all_entries"))
 
         return render_template("login.html", form=login_form)

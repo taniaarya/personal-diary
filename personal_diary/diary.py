@@ -15,8 +15,10 @@ class Diary:
         Adds entry specified by request parameter to database.
 
         Args:
-         request: dictionary containing title, and body text
-                  representing the entry to be added
+            request: dictionary containing title, and body text
+                  representing the entry to be added, as well as the user id of
+                  the user the entry is for
+
         Returns:
              dictionary containing the entry_id of the new entry
         """
@@ -27,7 +29,8 @@ class Diary:
                       body=request["body"],
                       created=curr_datetime,
                       modified=None,
-                      folder=None)
+                      folder=None,
+                      user_id=request["user_id"])
         db.session.add(entry)
         db.session.commit()
         return {"entry_id": new_entry_id}
@@ -39,6 +42,7 @@ class Diary:
 
         Args:
             request: a dictionary a single key, "entry_id" whose value is the id of the entry to be read
+
         Returns:
             a dictionary containing a key "entry" with of a value of type Entry. The Entry has information about the
             title, body, date_created, and time_created of the requested entry_id
@@ -47,14 +51,17 @@ class Diary:
         return {"entry": entry}
 
     @staticmethod
-    def read_all_entries() -> dict:
+    def read_all_entries(user_id: str) -> dict:
         """
         Reads all entries currently stored in local database.
+
+        Args:
+            user_id: string representing the id of the user the entry belongs to
 
         Returns:
              dictionary containing all the stored entries, where each entry has an id, title, body, date, and time
         """
-        all_entries = Entry.query.all()
+        all_entries = Entry.query.filter_by(user_id=user_id)
         entry_dict = {}
 
         for entry in all_entries:
@@ -100,7 +107,7 @@ class Diary:
         return {"entry_id": entry_id}
 
     @staticmethod
-    def search_entries(search_query: str) -> dict:
+    def search_entries(search_query: str, user_id: str) -> dict:
         """
         Returns entries that contain the keywords in the search query. The search is not case-sensitive.
         An entry matches the search query if it contains all keywords in its title or body text.
@@ -108,11 +115,12 @@ class Diary:
         Args:
             search_query: a string containing keywords to search for in the query. For example, a string of
             "apple pear" has two keywords of "apple" and "pear".
+            user_id: string representing the id of the user the entry belongs to
 
         Returns:
             dictionary containing the entries that match the search query
         """
-        matching_entries = Entry.query.filter()
+        matching_entries = Entry.query.filter_by(user_id=user_id)
         for keyword in search_query.split(' '):
             matching_entries = matching_entries.filter(Entry.title.ilike("%" + keyword + "%") |
                                                        Entry.body.ilike("%" + keyword + "%"))
