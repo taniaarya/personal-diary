@@ -1,5 +1,5 @@
 import unittest
-from unittest import TestCase
+from unittest import TestCase, mock
 from personal_diary import db
 from personal_diary.app import create_app
 from personal_diary.models import Entry, User
@@ -7,69 +7,100 @@ from personal_diary.diary import Diary
 from werkzeug.security import generate_password_hash
 
 
+def set_up_flask_app_test_client():
+    flask_app = create_app("test_database.db")
+    flask_app.config['TESTING'] = True
+    flask_app.config['WTF_CSRF_ENABLED'] = False
+    flask_app.app_context().push()
+    return flask_app.test_client()
+
+
+def create_test_user():
+    test_user = User(id="1", username="username", name="Test User", password=generate_password_hash("test"))
+    db.session.add(test_user)
+    db.session.commit()
+    return User.query.get("1")
+
+
+def tear_down_flask_test():
+    db.session.query(Entry).delete()
+    db.session.query(User).delete()
+    db.session.commit()
+
+
 class ApplicationTestGETAll(TestCase):
 
     def setUp(self) -> None:
-        flask_app = create_app("test_database.db")
-        flask_app.app_context().push()
-        self.client = flask_app.test_client()
+        self.client = set_up_flask_app_test_client()
+        self.test_user = create_test_user()
 
     def tearDown(self) -> None:
-        self.client = None
-        db.session.query(Entry).delete()
-        db.session.commit()
+        tear_down_flask_test()
 
-    def test_get_can_send_json(self):
+    @mock.patch('flask_login.utils._get_user')
+    def test_get_can_send_json(self, current_user):
+        current_user.return_value = self.test_user
         response = self.client.get("/")
-        self.assertTrue(response is not None, True)
+        self.assertTrue(response is not None)
 
-    def test_get_valid_json_returns_success_response_get(self):
+    @mock.patch('flask_login.utils._get_user')
+    def test_get_valid_json_returns_success_response_get(self, current_user):
+        current_user.return_value = self.test_user
         response = self.client.get("/")
-        self.assertTrue(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
 
 class ApplicationTestEntryGET(TestCase):
 
     def setUp(self) -> None:
-        flask_app = create_app("test_database.db")
-        flask_app.app_context().push()
-        self.client = flask_app.test_client()
-        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body"}).get("entry_id")
+        self.client = set_up_flask_app_test_client()
+        self.test_user = create_test_user()
+        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1"}).get("entry_id")
 
     def tearDown(self) -> None:
-        self.client = None
-        db.session.query(Entry).delete()
-        db.session.commit()
+        tear_down_flask_test()
 
-    def test_get_can_send_json(self):
+    @mock.patch('flask_login.utils._get_user')
+    def test_get_can_send_json(self, current_user):
+        current_user.return_value = self.test_user
         response = self.client.get(f'/entry/{self.entry_id}')
-        self.assertTrue(response is not None, True)
+        self.assertTrue(response is not None)
 
-    def test_get_valid_json_returns_success_response_get(self):
+    @mock.patch('flask_login.utils._get_user')
+    def test_get_valid_json_returns_success_response_get(self, current_user):
+        current_user.return_value = self.test_user
         response = self.client.get(f'/entry/{self.entry_id}')
-        self.assertTrue(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_get_nonexistent_entry_returns_404(self, current_user):
+        current_user.return_value = self.test_user
+        response = self.client.get(f'/entry/100')
+        self.assertEqual(response.status_code, 404)
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_get_entry_from_different_user_returns_404(self, current_user):
+        current_user.return_value = self.test_user
+        diff_entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "2"})["entry_id"]
+        response = self.client.get(f'/entry/{diff_entry_id}')
+        self.assertEqual(response.status_code, 404)
 
 
 class ApplicationTestCreateEntryGET(TestCase):
     def setUp(self) -> None:
-        flask_app = create_app("test_database.db")
-        flask_app.config['TESTING'] = True
-        flask_app.config['WTF_CSRF_ENABLED'] = False
-        flask_app.app_context().push()
-        self.client = flask_app.test_client()
+        self.client = set_up_flask_app_test_client()
+        self.test_user = create_test_user()
 
     def tearDown(self) -> None:
-        self.client = None
-        db.session.query(Entry).delete()
-        db.session.commit()
+        tear_down_flask_test()
 
     def test_get_can_send_json(self):
         response = self.client.get('/create')
-        self.assertTrue(response is not None, True)
+        self.assertTrue(response is not None)
 
     def test_get_valid_json_returns_success_response_get(self):
         response = self.client.get('/create')
-        self.assertTrue(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_get_create_renders_create_page(self):
         response = self.client.get('/create', follow_redirects=True)
@@ -78,26 +109,23 @@ class ApplicationTestCreateEntryGET(TestCase):
 
 class ApplicationTestCreateEntryPOST(TestCase):
     def setUp(self) -> None:
-        flask_app = create_app("test_database.db")
-        flask_app.config['TESTING'] = True
-        flask_app.config['WTF_CSRF_ENABLED'] = False
-        flask_app.app_context().push()
-        self.client = flask_app.test_client()
+        self.client = set_up_flask_app_test_client()
+        self.test_user = create_test_user()
 
     def tearDown(self) -> None:
-        self.client = None
-        db.session.query(Entry).delete()
-        db.session.commit()
+        tear_down_flask_test()
 
     def test_post_can_send_json(self):
         response = self.client.post("/create")
-        self.assertTrue(response is not None, True)
+        self.assertTrue(response is not None)
 
     def test_post_valid_json_returns_success_response(self):
         response = self.client.post("/create")
-        self.assertTrue(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
-    def test_successful_create_redirects_to_home(self):
+    @mock.patch('flask_login.utils._get_user')
+    def test_successful_create_redirects_to_home(self, current_user):
+        current_user.return_value = self.test_user
         response = self.client.post('/create', data=dict(
             title="Title",
             body="Body",
@@ -111,63 +139,81 @@ class ApplicationTestCreateEntryPOST(TestCase):
 
 class ApplicationTestUpdateEntryGET(TestCase):
     def setUp(self) -> None:
-        flask_app = create_app("test_database.db")
-        flask_app.app_context().push()
-        self.client = flask_app.test_client()
-        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body"}).get("entry_id")
+        self.client = set_up_flask_app_test_client()
+        self.test_user = create_test_user()
+        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1"}).get("entry_id")
 
     def tearDown(self) -> None:
-        self.client = None
-        db.session.query(Entry).delete()
-        db.session.commit()
+        tear_down_flask_test()
 
-    def test_put_can_send_json(self):
+    @mock.patch('flask_login.utils._get_user')
+    def test_update_can_send_json(self, current_user):
+        current_user.return_value = self.test_user
         valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id}
         response = self.client.get("/edit/{}".format(self.entry_id), json=valid_request_json)
-        self.assertTrue(response is not None, True)
+        self.assertTrue(response is not None)
 
-    def test_put_valid_json_returns_success_response(self):
+    @mock.patch('flask_login.utils._get_user')
+    def test_update_valid_json_returns_success_response(self, current_user):
+        current_user.return_value = self.test_user
         valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id}
         response = self.client.get("/edit/{}".format(self.entry_id), json=valid_request_json)
-        self.assertTrue(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
-    def test_get_create_renders_create_page(self):
+    @mock.patch('flask_login.utils._get_user')
+    def test_get_create_renders_create_page(self, current_user):
+        current_user.return_value = self.test_user
         response = self.client.get("/edit/{}".format(self.entry_id), follow_redirects=True)
         self.assertEqual(response.request.path, "/edit/{}".format(self.entry_id))
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_get_nonexistent_entry_returns_404(self, current_user):
+        current_user.return_value = self.test_user
+        response = self.client.get(f'/edit/100')
+        self.assertEqual(response.status_code, 404)
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_get_entry_from_not_current_user_returns_404(self, current_user):
+        current_user.return_value = self.test_user
+        diff_entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "2"})["entry_id"]
+        response = self.client.get(f'/edit/{diff_entry_id}')
+        self.assertEqual(response.status_code, 404)
 
 
 class ApplicationTestUpdateEntryPOST(TestCase):
     def setUp(self) -> None:
-        flask_app = create_app("test_database.db")
-        flask_app.config['TESTING'] = True
-        flask_app.config['WTF_CSRF_ENABLED'] = False
-        flask_app.app_context().push()
-        self.client = flask_app.test_client()
-        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body"}).get("entry_id")
+        self.client = set_up_flask_app_test_client()
+        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1"}).get("entry_id")
+        self.test_user = create_test_user()
 
     def tearDown(self) -> None:
-        self.client = None
-        db.session.query(Entry).delete()
-        db.session.commit()
+        tear_down_flask_test()
 
-    def test_update_can_send_json(self):
+    @mock.patch('flask_login.utils._get_user')
+    def test_update_can_send_json(self, current_user):
+        current_user.return_value = self.test_user
         valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id}
         response = self.client.post("/edit/{}".format(self.entry_id), json=valid_request_json)
-        self.assertTrue(response is not None, True)
+        self.assertTrue(response is not None)
 
-    def test_update_valid_json_returns_success_response(self):
-        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id}
-        response = self.client.post("/edit/{}".format(self.entry_id), json=valid_request_json)
-        self.assertTrue(response.status_code, 200)
+    @mock.patch('flask_login.utils._get_user')
+    def test_update_valid_json_returns_success_response(self, current_user):
+        current_user.return_value = self.test_user
+        response = self.client.post("/edit/{}".format(self.entry_id))
+        self.assertEqual(response.status_code, 200)
 
-    def test_successful_edit_redirects_to_home(self):
+    @mock.patch('flask_login.utils._get_user')
+    def test_successful_edit_redirects_to_home(self, current_user):
+        current_user.return_value = self.test_user
         response = self.client.post('/edit/{}'.format(self.entry_id), data=dict(
             title="Title",
             body="Body",
         ), follow_redirects=True)
         self.assertEqual(response.request.path, "/")
 
-    def test_unsuccessful_edit_stays_on_create_page(self):
+    @mock.patch('flask_login.utils._get_user')
+    def test_unsuccessful_edit_stays_on_create_page(self, current_user):
+        current_user.return_value = self.test_user
         response = self.client.post('/edit/{}'.format(self.entry_id), follow_redirects=True)
         self.assertEqual(response.request.path, '/edit/{}'.format(self.entry_id))
 
@@ -194,16 +240,10 @@ class ApplicationTestUpdateEntryPOST(TestCase):
 class ApplicationTestSignupGET(TestCase):
 
     def setUp(self) -> None:
-        flask_app = create_app("test_database.db")
-        flask_app.config['TESTING'] = True
-        flask_app.config['WTF_CSRF_ENABLED'] = False
-        flask_app.app_context().push()
-        self.client = flask_app.test_client()
+        self.client = set_up_flask_app_test_client()
 
     def tearDown(self) -> None:
-        self.client = None
-        db.session.query(User).delete()
-        db.session.commit()
+        tear_down_flask_test()
 
     def test_get_can_send_json(self):
         response = self.client.get("/signup")
@@ -221,16 +261,10 @@ class ApplicationTestSignupGET(TestCase):
 class ApplicationTestSignupPOST(TestCase):
 
     def setUp(self) -> None:
-        flask_app = create_app("test_database.db")
-        flask_app.config['TESTING'] = True
-        flask_app.config['WTF_CSRF_ENABLED'] = False
-        flask_app.app_context().push()
-        self.client = flask_app.test_client()
+        self.client = set_up_flask_app_test_client()
 
     def tearDown(self) -> None:
-        self.client = None
-        db.session.query(User).delete()
-        db.session.commit()
+        tear_down_flask_test()
 
     def test_post_can_send_json(self):
         response = self.client.post("/signup")
