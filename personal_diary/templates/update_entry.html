@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+<!--
+Displays a page with a form to update the title and body text for an entry.
+
+Args:
+    form: the form object to render. It contains fields for the title and body text.
+-->
+
+{% block content %}
+    <div class="form-wrapper">
+        <h2 class="title">Edit Current Entry</h2>
+
+        <form method="POST" action="{{ url_for('update_entry', entry_id=entry.id) }}">
+            {{ form.csrf_token }}
+
+            <fieldset class="form-field">
+                {{ form.title.label }}<br>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <ul class="errors">
+                        {% for error in form.title.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </fieldset>
+
+            <fieldset class="form-field">
+                {{ form.body.label }}<br>
+                {{ form.body }}
+                {% if form.body.errors %}
+                    <ul class="errors">
+                        {% for error in form.body.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </fieldset>
+
+            {{ form.submit }}
+
+        </form>
+
+        {{ ckeditor.load(custom_url=url_for('static', filename='ckeditor/ckeditor.js')) }}
+        {{ ckeditor.config(name='body') }}
+    </div>
+{% endblock %}

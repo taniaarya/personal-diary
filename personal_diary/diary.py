@@ -6,7 +6,7 @@ from personal_diary import db
 
 class Diary:
     """
-    A class representing a personal diary, with entry information stored in "personal_diary/entry_local_storage.json"
+    A class representing a personal diary. The diary contains Entry objects which are defined in models.py.
     """
 
     @staticmethod
