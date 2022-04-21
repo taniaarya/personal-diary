@@ -216,21 +216,21 @@ class DiaryTestSearchEntries(unittest.TestCase):
         self.assertEqual(Diary.search_entries("hello", "1"), {})
 
     def test_search_multiple_keyword_query_returns_correct_entries(self):
-        self.populate_multiple_entries()
+        DiaryTestSearchEntries.populate_multiple_entries()
 
         self.assertEqual(list(Diary.search_entries("new class", "1").keys()), ["2"])
 
         self.assertEqual(list(Diary.search_entries("long monday was", "1").keys()), ["3"])
 
     def test_search_multiple_entries_no_match_returns_empty(self):
-        self.populate_multiple_entries()
+        DiaryTestSearchEntries.populate_multiple_entries()
 
         self.assertEqual(Diary.search_entries("happy", "1"), {})
         self.assertEqual(Diary.search_entries("dance", "1"), {})
         self.assertEqual(Diary.search_entries("food", "1"), {})
 
     def test_search_multiple_entries_match_returns_correct_entries(self):
-        self.populate_multiple_entries()
+        DiaryTestSearchEntries.populate_multiple_entries()
 
         self.assertEqual(list(Diary.search_entries("day", "1").keys()), ["2", "3"])
 
