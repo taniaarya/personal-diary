@@ -181,17 +181,60 @@ class DiaryTestDeleteEntry(unittest.TestCase):
         db.session.commit()
 
     def test_delete_empties_entries_when_only_one_entry(self):
-        DiaryTestDeleteEntry.populate_single_entry()
+        self.populate_single_entry()
         self.assertDictEqual(Diary.delete_entry({"entry_id": "1"}), {"entry_id": "1"})
-        entries = Entry.query.all()
-        self.assertEqual(entries, [])
 
-    def test_delete_with_multiple_existing_entries_only_deletes_specified_entry(self):
-        DiaryTestDeleteEntry.populate_multiple_entries()
+        self.assertEqual(Diary.read_all_entries("1"), {})
+
+    def test_delete_with_two_existing_entries_only_deletes_specified_entry(self):
+        self.populate_multiple_entries()
+
         for entry_id in range(5):
             self.assertEqual(Diary.delete_entry({"entry_id": entry_id}), {"entry_id": entry_id})
-        entries = Entry.query.all()
-        self.assertEqual(entries, [])
+
+        self.assertEqual(Diary.read_all_entries("1"), {})
+
+
+class DiaryTestSearchEntries(unittest.TestCase):
+
+    def tearDown(self) -> None:
+        db.session.query(Entry).delete()
+        db.session.commit()
+
+    @staticmethod
+    def populate_multiple_entries():
+        entry_list = [
+            Entry(id="1", title="New Title", body="Hello World", created=datetime.now(), user_id="1"),
+            Entry(id="2", title="A new day", body="class was so good", created=datetime.now(), user_id="1"),
+            Entry(id="3", title="A long Day", body="Today was monday", created=datetime.now(), user_id="1")
+        ]
+        for test_entry in entry_list:
+            db.session.add(test_entry)
+        db.session.commit()
+
+    def test_search_empty_dictionary_returns_empty(self):
+        self.assertEqual(Diary.search_entries("hello", "1"), {})
+
+    def test_search_multiple_keyword_query_returns_correct_entries(self):
+        self.populate_multiple_entries()
+
+        self.assertEqual(list(Diary.search_entries("new class", "1").keys()), ["2"])
+
+        self.assertEqual(list(Diary.search_entries("long monday was", "1").keys()), ["3"])
+
+    def test_search_multiple_entries_no_match_returns_empty(self):
+        self.populate_multiple_entries()
+
+        self.assertEqual(Diary.search_entries("happy", "1"), {})
+        self.assertEqual(Diary.search_entries("dance", "1"), {})
+        self.assertEqual(Diary.search_entries("food", "1"), {})
+
+    def test_search_multiple_entries_match_returns_correct_entries(self):
+        self.populate_multiple_entries()
+
+        self.assertEqual(list(Diary.search_entries("day", "1").keys()), ["2", "3"])
+
+        self.assertEqual(list(Diary.search_entries("good", "1").keys()), ["2"])
 
 
 if __name__ == '__main__':
