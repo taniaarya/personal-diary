@@ -87,6 +87,7 @@ class ApplicationTestEntryGET(TestCase):
 
 
 class ApplicationTestCreateEntryGET(TestCase):
+
     def setUp(self) -> None:
         self.client = set_up_flask_app_test_client()
         self.test_user = create_test_user()
@@ -108,6 +109,7 @@ class ApplicationTestCreateEntryGET(TestCase):
 
 
 class ApplicationTestCreateEntryPOST(TestCase):
+
     def setUp(self) -> None:
         self.client = set_up_flask_app_test_client()
         self.test_user = create_test_user()
@@ -161,7 +163,7 @@ class ApplicationTestUpdateEntryGET(TestCase):
         self.assertEqual(response.status_code, 200)
 
     @mock.patch('flask_login.utils._get_user')
-    def test_get_create_renders_create_page(self, current_user):
+    def test_get_update_renders_update_page(self, current_user):
         current_user.return_value = self.test_user
         response = self.client.get("/edit/{}".format(self.entry_id), follow_redirects=True)
         self.assertEqual(response.request.path, "/edit/{}".format(self.entry_id))
@@ -218,24 +220,43 @@ class ApplicationTestUpdateEntryPOST(TestCase):
         self.assertEqual(response.request.path, '/edit/{}'.format(self.entry_id))
 
 
-# class ApplicationTestDELETE(TestCase):
-#     def setUp(self) -> None:
-#         flask_app = create_app("test_database.db")
-#         flask_app.app_context().push()
-#         self.client = flask_app.test_client()
-#
-#     def tearDown(self) -> None:
-#         self.client = None
-#         db.session.query(Entry).delete()
-#         db.session.commit()
-#
-#     def test_delete_can_send_json(self):
-#         response = self.client.delete("/delete")
-#         self.assertTrue(response is not None, True)
-#
-#     def test_delete_valid_json_returns_success_response(self):
-#         response = self.client.delete("/delete")
-#         self.assertTrue(response.status_code, 200)
+class ApplicationTestDeleteEntryGET(TestCase):
+
+    def setUp(self) -> None:
+        self.client = set_up_flask_app_test_client()
+        self.test_user = create_test_user()
+        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1"}).get("entry_id")
+
+    def tearDown(self) -> None:
+        tear_down_flask_test()
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_delete_can_send_json(self, current_user):
+        current_user.return_value = self.test_user
+        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id}
+        response = self.client.get("/delete/{}".format(self.entry_id), json=valid_request_json)
+        self.assertTrue(response is not None)
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_get_delete_redirects_to_home_page(self, current_user):
+        current_user.return_value = self.test_user
+        response = self.client.get("/delete/{}".format(self.entry_id), follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.request.path, "/")
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_delete_nonexistent_entry_returns_404(self, current_user):
+        current_user.return_value = self.test_user
+        response = self.client.get(f'/delete/100')
+        self.assertEqual(response.status_code, 404)
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_delete_entry_from_not_current_user_returns_404(self, current_user):
+        current_user.return_value = self.test_user
+        diff_entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "2"})["entry_id"]
+        response = self.client.get(f'/delete/{diff_entry_id}')
+        self.assertEqual(response.status_code, 404)
+
 
 class ApplicationTestSignupGET(TestCase):
 
