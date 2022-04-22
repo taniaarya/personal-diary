@@ -51,7 +51,7 @@ class ApplicationTestGETAll(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class ApplicationTestEntryGET(TestCase):
+class ApplicationTestReadEntryGET(TestCase):
 
     def setUp(self) -> None:
         self.client = set_up_flask_app_test_client()
@@ -269,11 +269,11 @@ class ApplicationTestSignupGET(TestCase):
 
     def test_get_can_send_json(self):
         response = self.client.get("/signup")
-        self.assertTrue(response is not None, True)
+        self.assertEqual(response is not None, True)
 
     def test_get_valid_json_returns_success_response_get(self):
         response = self.client.get("/signup")
-        self.assertTrue(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_get_renders_signup_page(self):
         response = self.client.get('/signup', follow_redirects=True)
@@ -290,11 +290,11 @@ class ApplicationTestSignupPOST(TestCase):
 
     def test_post_can_send_json(self):
         response = self.client.post("/signup")
-        self.assertTrue(response is not None, True)
+        self.assertEqual(response is not None, True)
 
     def test_post_valid_json_returns_success_response_get(self):
         response = self.client.post("/signup")
-        self.assertTrue(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_successful_signup_redirects_to_login(self):
         response = self.client.post('/signup', data=dict(
@@ -318,6 +318,76 @@ class ApplicationTestSignupPOST(TestCase):
             password="password123"
         ), follow_redirects=True)
         self.assertEqual(response.request.path, "/signup")
+
+
+class ApplicationTestLoginGET(TestCase):
+    def setUp(self) -> None:
+        self.client = set_up_flask_app_test_client()
+
+    def tearDown(self) -> None:
+        tear_down_flask_test()
+
+    def test_get_can_send_json(self):
+        response = self.client.get("/login")
+        self.assertEqual(response is not None, True)
+
+    def test_get_valid_json_returns_success_response_get(self):
+        response = self.client.get("/login")
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_renders_signup_page(self):
+        response = self.client.get('/login', follow_redirects=True)
+        self.assertEqual(response.request.path, "/login")
+
+
+class ApplicationTestLoginPOST(TestCase):
+    def setUp(self) -> None:
+        self.client = set_up_flask_app_test_client()
+
+    def tearDown(self) -> None:
+        tear_down_flask_test()
+
+    def test_post_can_send_json(self):
+        response = self.client.post("/login")
+        self.assertEqual(response is not None, True)
+
+    def test_post_valid_json_returns_success_response_get(self):
+        response = self.client.post("/login")
+        self.assertTrue(response.status_code, 200)
+
+    def test_successful_login_redirects_to_home(self):
+        user = User(id="1", username="username", name="Test User", password=generate_password_hash("password123"))
+        db.session.add(user)
+        db.session.commit()
+        response = self.client.post('/login', data=dict(
+            username="username",
+            password="password123"
+        ), follow_redirects=True)
+        self.assertEqual(response.request.path, "/")
+
+    def test_empty_login_stays_on_login_page(self):
+        response = self.client.post('/login', follow_redirects=True)
+        self.assertEqual(response.request.path, "/login")
+
+    def test_user_exists_incorrect_password_stays_login_page(self):
+        user = User(id="1", username="username", name="Test User", password=generate_password_hash("password123"))
+        db.session.add(user)
+        db.session.commit()
+        response = self.client.post('/login', data=dict(
+            username="username",
+            password="password1234"
+        ), follow_redirects=True)
+        self.assertEqual(response.request.path, "/login")
+
+    def test_user_does_not_exist_incorrect_password_stays_login_page(self):
+        user = User(id="1", username="username", name="Test User", password=generate_password_hash("password123"))
+        db.session.add(user)
+        db.session.commit()
+        response = self.client.post('/login', data=dict(
+            username="username2",
+            password="password123"
+        ), follow_redirects=True)
+        self.assertEqual(response.request.path, "/login")
 
 
 if __name__ == '__main__':
