@@ -1,258 +1,240 @@
 import unittest
-import json
-import re
+from datetime import datetime
 from personal_diary.diary import Diary
+from personal_diary.app import create_app
+from personal_diary.models import Entry
+from personal_diary import db
 
-
-class DiaryTestReadFromDb(unittest.TestCase):
-
-    def setUp(self) -> None:
-        self.diary = Diary()
-
-    def tearDown(self) -> None:
-        with open(self.diary.local_db_path, 'w') as outfile:
-            outfile.write("{}")
-
-    def test_read_empty_dictionary_returns_empty(self):
-        self.assertEqual(self.diary.read_from_db(), {})
-
-    def test_read_populated_db_one_key_returns_correct_dict(self):
-        test_dict = {
-            "key1": "value1"
-        }
-        json_object = json.dumps(test_dict, indent=4)
-        with open(self.diary.local_db_path, "w") as outfile:
-            outfile.write(json_object)
-
-        self.assertEqual(self.diary.read_from_db(), test_dict)
-
-    def test_read_populated_db_multiple_keys_returns_correct_dict(self):
-        test_dict = {
-            "key1": "value1",
-            "key2": "value2"
-        }
-        json_object = json.dumps(test_dict, indent=4)
-        with open(self.diary.local_db_path, "w") as outfile:
-            outfile.write(json_object)
-
-        self.assertEqual(self.diary.read_from_db(), test_dict)
-
-
-class DiaryTestWriteToDb(unittest.TestCase):
-
-    def setUp(self) -> None:
-        self.diary = Diary()
-
-    def tearDown(self) -> None:
-        with open(self.diary.local_db_path, 'w') as outfile:
-            outfile.write("{}")
-
-    def read(self):
-        with open(self.diary.local_db_path, 'r') as openfile:
-            return json.load(openfile)
-
-    def test_write_empty_dictionary_populates_empty_db(self):
-        self.diary.write_to_db({})
-        self.assertEqual(self.read(), {})
-
-    def test_write_dict_one_key_populates_db(self):
-        test_dict = {
-            "key1": "value1"
-        }
-        self.diary.write_to_db(test_dict)
-        self.assertEqual(self.read(), test_dict)
-
-    def test_write_dict_multiple_keys_populates_db(self):
-        test_dict = {
-            "key1": "value1",
-            "key2": "value2"
-        }
-        self.diary.write_to_db(test_dict)
-        self.assertEqual(self.read(), test_dict)
+app = create_app("test_database.db")
+app.app_context().push()
 
 
 class DiaryTestCreateEntry(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.diary = Diary()
+        self.valid_request = {"title": "Title", "body": "Body", "user_id": "1"}
 
     def tearDown(self) -> None:
-        with open(self.diary.local_db_path, 'w') as outfile:
-            outfile.write("{}")
-
-    def read(self):
-        with open(self.diary.local_db_path, 'r') as openfile:
-            return json.load(openfile)
+        db.session.query(Entry).delete()
+        db.session.commit()
 
     def test_valid_request_returns_nonzero_entry_id(self):
-        valid_request = {"title": "Title", "body": "Body"}
-        self.assertNotEqual(self.diary.create_entry(valid_request), {"entry_id": "0"})
+        self.assertNotEqual(Diary.create_entry(self.valid_request), {"entry_id": "0"})
 
     def test_response_contains_only_entry_id_key(self):
-        valid_request = {"title": "Title", "body": "Body"}
-        create_response = self.diary.create_entry(valid_request)
+        create_response = Diary.create_entry(self.valid_request)
         self.assertTrue("entry_id" in create_response)
         self.assertEqual(set(create_response.keys()), {"entry_id"})
 
     def test_entry_id_is_unique(self):
         ids = []
-        valid_request = {"title": "Title", "body": "Body"}
         for _ in range(10):
-            ids.append(self.diary.create_entry(valid_request)["entry_id"])
+            ids.append(Diary.create_entry(self.valid_request)["entry_id"])
         self.assertEqual(len(set(ids)), 10)
 
     def test_single_create_entry_db_populated_with_correct_values(self):
-        valid_request = {"title": "Title", "body": "Body"}
-        entry_id = self.diary.create_entry(valid_request)["entry_id"]
-        db_value = self.read()
-        self.assertEqual(db_value[entry_id]["title"], "Title")
-        self.assertEqual(db_value[entry_id]["body"], "Body")
-        self.assertTrue(re.match(r"^[0-9]{2}/[0-9]{2}/[0-9]{4}$", db_value[entry_id]["date_created"]))
-        self.assertTrue(re.match(r"^[0-9]{2}:[0-9]{2}$", db_value[entry_id]["time_created"]))
+        entry_id = Diary.create_entry(self.valid_request)["entry_id"]
+        db_entry = Entry.query.filter_by(id=entry_id).first()
+        self.assertEqual(db_entry.id, entry_id)
+        self.assertEqual(db_entry.title, "Title")
+        self.assertEqual(db_entry.body, "Body")
+        self.assertIsInstance(db_entry.created, datetime)
+        self.assertIsInstance(db_entry.created, datetime)
 
     def test_multiple_create_entry_db_populated_with_correct_values(self):
-        valid_request = {"title": "Title", "body": "Body"}
         for _ in range(10):
-            entry_id = self.diary.create_entry(valid_request)["entry_id"]
-            db_value = self.read()
-            self.assertEqual(db_value[entry_id]["title"], "Title")
-            self.assertEqual(db_value[entry_id]["body"], "Body")
-            self.assertTrue(re.match(r"^[0-9]{2}/[0-9]{2}/[0-9]{4}$", db_value[entry_id]["date_created"]))
-            self.assertTrue(re.match(r"^[0-9]{2}:[0-9]{2}$", db_value[entry_id]["time_created"]))
+            entry_id = Diary.create_entry(self.valid_request)["entry_id"]
+            db_entry = Entry.query.filter_by(id=entry_id).first()
+            self.assertEqual(db_entry.id, entry_id)
+            self.assertEqual(db_entry.title, "Title")
+            self.assertEqual(db_entry.body, "Body")
+            self.assertIsInstance(db_entry.created, datetime)
+            self.assertIsInstance(db_entry.created, datetime)
 
 
-class DiaryTestReadEntry(unittest.TestCase):
+class DiaryTestReadSingleEntry(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.diary = Diary()
+        for entry_id in range(5):
+            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1")
+            db.session.add(test_entry)
+        db.session.commit()
 
     def tearDown(self) -> None:
-        with open(self.diary.local_db_path, 'w') as outfile:
-            outfile.write("{}")
+        db.session.query(Entry).delete()
+        db.session.commit()
 
     def test_read_populated_db_one_key_returns_correct_dict(self):
-        test_dict = {
-            "1": {"title": "Title", "body": "Body", "date_created": "12/22/2021", "time_created": "12:23"}
-        }
-        json_object = json.dumps(test_dict, indent=4)
-        with open(self.diary.local_db_path, "w") as outfile:
-            outfile.write(json_object)
-
-        self.assertEqual(self.diary.read_entry({"entry_id": "1"}), test_dict["1"])
+        read_entry = Diary.read_single_entry({"entry_id": "1"}).get("entry")
+        self.assertEqual(read_entry.id, "1")
+        self.assertEqual(read_entry.title, "Title")
+        self.assertEqual(read_entry.body, "Body")
 
     def test_read_populated_db_multiple_keys_returns_correct_dict(self):
-        test_dict = {
-            "1": {"title": "Title", "body": "Body", "date_created": "12/22/2021", "time_created": "12:23"},
-            "2": {"title": "Title", "body": "Body", "date_created": "12/22/2021", "time_created": "14:23"}
-        }
-        json_object = json.dumps(test_dict, indent=4)
-        with open(self.diary.local_db_path, "w") as outfile:
-            outfile.write(json_object)
+        entry_ids = [str(entry_id) for entry_id in range(5)]
+        for entry_id in entry_ids:
+            self.assertEqual(Diary.read_single_entry({"entry_id": entry_id}).get("entry").id, entry_id)
+            self.assertEqual(Diary.read_single_entry({"entry_id": entry_id}).get("entry").title, "Title")
+            self.assertEqual(Diary.read_single_entry({"entry_id": entry_id}).get("entry").body, "Body")
 
-        self.assertEqual(self.diary.read_entry({"entry_id": "1"}), test_dict["1"])
-        self.assertEqual(self.diary.read_entry({"entry_id": "2"}), test_dict["2"])
+
+class DiaryTestReadAllEntries(unittest.TestCase):
+
+    def tearDown(self) -> None:
+        db.session.query(Entry).delete()
+        db.session.commit()
+
+    @staticmethod
+    def populate_multiple_entries():
+        for entry_id in range(5):
+            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1")
+            db.session.add(test_entry)
+        db.session.commit()
+
+    @staticmethod
+    def populate_single_entry():
+        test_entry = Entry(id="1", title="Title", body="Body", created=datetime.now(), user_id="1")
+        db.session.add(test_entry)
+        db.session.commit()
+
+    def test_read_empty_dictionary_returns_empty(self):
+        self.assertEqual(Diary.read_all_entries("1"), {})
+
+    def test_read_populated_db_one_key_returns_correct_dict(self):
+        DiaryTestReadAllEntries.populate_single_entry()
+        entries = Diary.read_all_entries("1")
+        self.assertEqual(entries["1"].title, "Title")
+        self.assertEqual(entries["1"].body, "Body")
+        self.assertEqual(len(entries), 1)
+
+    def test_read_populated_db_multiple_keys_returns_correct_dict(self):
+        DiaryTestReadAllEntries.populate_multiple_entries()
+        entries = Diary.read_all_entries("1")
+        for entry_id in entries:
+            self.assertEqual(entries[entry_id].title, "Title")
+            self.assertEqual(entries[entry_id].body, "Body")
+        self.assertEqual(len(entries), 5)
+
+    def test_read_only_returns_entries_matching_user_id_param(self):
+        test_entry = Entry(id="10", title="Title", body="Body", created=datetime.now(), user_id="2")
+        db.session.add(test_entry)
+        db.session.commit()
+        DiaryTestReadAllEntries.populate_multiple_entries()
+        entries = Diary.read_all_entries("1")
+        self.assertEqual(len(entries), 5)
 
 
 class DiaryTestUpdateEntry(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.diary = Diary()
-        fake_data = {"1": {"title": "value1", "body": "Hello World!"}, "2": {"title": "value2", "body": "Hello World!"}}
-        json_object = json.dumps(fake_data, indent=4)
-        with open(self.diary.local_db_path, "w") as outfile:
-            outfile.write(json_object)
+        for entry_id in range(5):
+            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1")
+            db.session.add(test_entry)
+        db.session.commit()
 
     def tearDown(self) -> None:
-        with open(self.diary.local_db_path, 'w') as outfile:
-            outfile.write("{}")
+        db.session.query(Entry).delete()
+        db.session.commit()
 
     def test_single_update_with_new_body_valid_entry_id_and_title_returns_updated_entry(self):
-        expected = {"1": {"title": "value2", "body": "Hello Human!"}}
-        result = self.diary.update_entry({"entry_id": '1', "title": "value2", "body": "Hello Human!"})
-        self.assertEqual(expected, result)
+        Diary.update_entry({"entry_id": "1", "title": "value2", "body": "Hello Human!"})
+        updated_entry = Entry.query.get("1")
+        self.assertEqual(updated_entry.title, "value2")
+        self.assertEqual(updated_entry.body, "Hello Human!")
 
     def test_multiple_update_to_same_entry_returns_updated_entry(self):
         for idx in range(10):
             new_title = "value" + str(idx)
             new_body = "Hello Human!" + str(idx)
-            expected = {"1": {"title": new_title, "body": new_body}}
-            result = self.diary.update_entry({"entry_id": "1", "title": new_title, "body": new_body})
-            self.assertEqual(expected, result)
+            Diary.update_entry({"entry_id": "1", "title": new_title, "body": new_body})
+            updated_entry = Entry.query.get("1")
+            self.assertEqual(updated_entry.title, new_title)
+            self.assertEqual(updated_entry.body, new_body)
 
     def test_update_to_different_entries_returns_updated_entries(self):
-        for entry_id in range(1, 3):
+        for entry_id in range(5):
             new_title = "value" + str(entry_id)
             new_body = "Hello Human!" + str(entry_id)
-            expected = {str(entry_id): {"title": new_title, "body": new_body}}
-            result = self.diary.update_entry({"entry_id": str(entry_id), "title": new_title, "body": new_body})
-            self.assertEqual(expected, result)
+            Diary.update_entry({"entry_id": str(entry_id), "title": new_title, "body": new_body})
+            updated_entry = Entry.query.get(str(entry_id))
+            self.assertEqual(updated_entry.title, new_title)
+            self.assertEqual(updated_entry.body, new_body)
 
 
 class DiaryTestDeleteEntry(unittest.TestCase):
 
-    def setUp(self) -> None:
-        self.diary = Diary()
-
     def tearDown(self) -> None:
-        with open(self.diary.local_db_path, 'w') as outfile:
-            outfile.write("{}")
+        db.session.query(Entry).delete()
+        db.session.commit()
+
+    @staticmethod
+    def populate_multiple_entries():
+        for entry_id in range(5):
+            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1")
+            db.session.add(test_entry)
+        db.session.commit()
+
+    @staticmethod
+    def populate_single_entry():
+        test_entry = Entry(id="1", title="Title", body="Body", created=datetime.now(), user_id="1")
+        db.session.add(test_entry)
+        db.session.commit()
 
     def test_delete_empties_entries_when_only_one_entry(self):
-        test_dict = {
-            "1": {"title": "title_value"},
-        }
-        json_object = json.dumps(test_dict, indent=4)
-        with open(self.diary.local_db_path, "w") as outfile:
-            outfile.write(json_object)
-        self.assertDictEqual(self.diary.delete_entry({"entry_id": "1"}), {"entry_id": "1"})
+        self.populate_single_entry()
+        self.assertDictEqual(Diary.delete_entry({"entry_id": "1"}), {"entry_id": "1"})
 
-        with open(self.diary.local_db_path, "r") as stored_entries:
-            curr_entries = json.load(stored_entries)
-        self.assertDictEqual(curr_entries, {})
+        self.assertEqual(Diary.read_all_entries("1"), {})
 
     def test_delete_with_two_existing_entries_only_deletes_specified_entry(self):
-        test_dict = {
-            "1": {"title": "title_value"},
-            "2": {"title": "title_value"},
-        }
-        json_object = json.dumps(test_dict, indent=4)
-        with open(self.diary.local_db_path, "w") as outfile:
-            outfile.write(json_object)
-        self.assertDictEqual(self.diary.delete_entry({"entry_id": "1"}), {"entry_id": "1"})
+        self.populate_multiple_entries()
 
-        with open(self.diary.local_db_path, "r") as stored_entries:
-            curr_entries = json.load(stored_entries)
-        self.assertDictEqual(curr_entries, {"2": {"title": "title_value"}})
+        for entry_id in range(5):
+            self.assertEqual(Diary.delete_entry({"entry_id": entry_id}), {"entry_id": entry_id})
+
+        self.assertEqual(Diary.read_all_entries("1"), {})
 
 
-class DiaryTestIsIdInvalid(unittest.TestCase):
-    def setUp(self) -> None:
-        self.diary = Diary()
+class DiaryTestSearchEntries(unittest.TestCase):
 
     def tearDown(self) -> None:
-        with open(self.diary.local_db_path, 'w') as outfile:
-            outfile.write("{}")
+        db.session.query(Entry).delete()
+        db.session.commit()
 
-    def test_invalid_id_returns_true(self):
-        test_dict = {
-            "1": {"title": "title_value"},
-            "2": {"title": "title_value"}
-        }
-        self.diary.write_to_db(test_dict)
+    @staticmethod
+    def populate_multiple_entries():
+        entry_list = [
+            Entry(id="1", title="New Title", body="Hello World", created=datetime.now(), user_id="1"),
+            Entry(id="2", title="A new day", body="class was so good", created=datetime.now(), user_id="1"),
+            Entry(id="3", title="A long Day", body="Today was monday", created=datetime.now(), user_id="1")
+        ]
+        for test_entry in entry_list:
+            db.session.add(test_entry)
+        db.session.commit()
 
-        self.assertTrue(self.diary.is_id_invalid(-1))
-        self.assertTrue(self.diary.is_id_invalid(0))
-        self.assertTrue(self.diary.is_id_invalid(50))
+    def test_search_empty_dictionary_returns_empty(self):
+        self.assertEqual(Diary.search_entries("hello", "1"), {})
 
-    def test_valid_id_returns_false(self):
-        test_dict = {
-            "1": {"title": "title_value"},
-            "2": {"title": "title_value"}
-        }
-        self.diary.write_to_db(test_dict)
+    def test_search_multiple_keyword_query_returns_correct_entries(self):
+        DiaryTestSearchEntries.populate_multiple_entries()
 
-        self.assertFalse(self.diary.is_id_invalid(1))
-        self.assertFalse(self.diary.is_id_invalid(2))
+        self.assertEqual(list(Diary.search_entries("new class", "1").keys()), ["2"])
+
+        self.assertEqual(list(Diary.search_entries("long monday was", "1").keys()), ["3"])
+
+    def test_search_multiple_entries_no_match_returns_empty(self):
+        DiaryTestSearchEntries.populate_multiple_entries()
+
+        self.assertEqual(Diary.search_entries("happy", "1"), {})
+        self.assertEqual(Diary.search_entries("dance", "1"), {})
+        self.assertEqual(Diary.search_entries("food", "1"), {})
+
+    def test_search_multiple_entries_match_returns_correct_entries(self):
+        DiaryTestSearchEntries.populate_multiple_entries()
+
+        self.assertEqual(list(Diary.search_entries("day", "1").keys()), ["2", "3"])
+
+        self.assertEqual(list(Diary.search_entries("good", "1").keys()), ["2"])
 
 
 if __name__ == '__main__':

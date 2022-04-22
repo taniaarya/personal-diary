@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+<!--
+Displays the home page for the app, which contains a button to create an entry, a search bar to search for entries,
+and a list of existing entries. If the user searches for entries matching a query, then the list results are
+also displayed here.
+
+Args:
+  form: the form object to render. It contains a text field to input a search query.
+  entries: a dictionary of entries to display.
+
+-->
+
+{% block content %}
+<div>
+    <a href="{{ url_for('create_entry') }}" class="btn btn-primary mt-4 mb-4" role="button">Create an Entry</a>
+
+    <form method="post" action="" style="max-width:600px">
+        {{ form.csrf_token }}
+        {{ form.search }}
+        {{ form.submit }}
+    </form>
+
+    {% if entries|length == 0 %}
+        <p>There are no entries.</p>
+    {% else %}
+        <p class="text-secondary" style="font-size: 16px">Entries: {{entries|length}}</p>
+        {% for entry_id, entry in entries.items()|reverse %}
+            <div style="width: 800px">
+                    <a style="font-size: 18px"
+                       href="{{ url_for('read_single_entry', entry_id=entry.id) }}">{{entry.title}}
+                    </a>
+                    <p style="font-size: 16px" class="mb-4">Created: {{entry.created.replace(microsecond=0)}}</p>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

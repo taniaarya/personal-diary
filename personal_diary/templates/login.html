@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+<!--
+Displays a page with the login form for users to sign in to their account using their username and password.
+
+Args:
+    form: the form object to render. It contains fields for the username and password.
+-->
+
+{% block content %}
+
+    <div class="form-wrapper">
+        <h2 class="title">Login</h2>
+
+        <form method="POST" action="{{ url_for('login') }}">
+
+            {{ form.csrf_token }}
+
+            <fieldset class="form-field">
+                {{ form.username.label }}<br>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <ul class="errors">
+                        {% for error in form.username.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </fieldset>
+
+            <fieldset class="form-field">
+                {{ form.password.label }}<br>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <ul class="errors">
+                        {% for error in form.password.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </fieldset>
+
+            {{ form.login }}
+
+        </form>
+
+        <a href="{{ url_for('signup') }}" class="btn btn-primary mt-5" role="button">Create an Account Here</a>
+    </div>
+
+{% endblock %}

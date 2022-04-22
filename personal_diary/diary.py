@@ -1,73 +1,76 @@
-import json
-import os
 from datetime import datetime
 import uuid
+from personal_diary.models import Entry
+from personal_diary import db
 
 
 class Diary:
     """
-    A class representing a personal diary, with entry information stored in "personal_diary/entry_local_storage.json"
+    A class representing a personal diary. The diary contains Entry objects which are defined in models.py.
     """
 
-    def __init__(self):
-        self.local_db_path = os.path.join(os.path.abspath('..'), "personal_diary/entry_local_storage.json")
+    @staticmethod
+    def create_entry(request: dict) -> dict:
+        """
+        Adds entry specified by request parameter to database.
 
-    def read_from_db(self):
+        Args:
+            request: dictionary containing title, and body text
+                  representing the entry to be added, as well as the user id of
+                  the user the entry is for
+
+        Returns:
+             dictionary containing the entry_id of the new entry
+        """
+        new_entry_id = str(uuid.uuid4())
+        curr_datetime = datetime.now()
+        entry = Entry(id=new_entry_id,
+                      title=request["title"],
+                      body=request["body"],
+                      created=curr_datetime,
+                      modified=None,
+                      folder=None,
+                      user_id=request["user_id"])
+        db.session.add(entry)
+        db.session.commit()
+        return {"entry_id": new_entry_id}
+
+    @staticmethod
+    def read_single_entry(request: dict) -> dict:
+        """
+        Reads single diary entry from the database.
+
+        Args:
+            request: a dictionary a single key, "entry_id" whose value is the id of the entry to be read
+
+        Returns:
+            a dictionary containing a key "entry" with of a value of type Entry. The Entry has information about the
+            title, body, date_created, and time_created of the requested entry_id
+        """
+        entry = Entry.query.get_or_404(request["entry_id"])
+        return {"entry": entry}
+
+    @staticmethod
+    def read_all_entries(user_id: str) -> dict:
         """
         Reads all entries currently stored in local database.
+
+        Args:
+            user_id: string representing the id of the user the entry belongs to
 
         Returns:
              dictionary containing all the stored entries, where each entry has an id, title, body, date, and time
         """
-        with open(self.local_db_path, "r") as stored_entries:
-            return json.load(stored_entries)
+        all_entries = Entry.query.filter_by(user_id=user_id)
+        entry_dict = {}
 
-    def write_to_db(self, entry_dict: dict) -> None:
-        """
-        Writes updated entry storage to local database.
+        for entry in all_entries:
+            entry_dict[entry.id] = entry
 
-        Args:
-             entry_dict: dictionary containing all new entries where the key is the entry_id and the value is
-                         a dictionary containing that entry's title, body, date, and time
-        """
-        with open(self.local_db_path, "w") as stored_entries:
-            json.dump(entry_dict, stored_entries, indent=4)
+        return entry_dict
 
-    def create_entry(self, request: dict) -> dict:
-        """
-        Adds entry specified by request parameter to local database.
-
-        Args:
-         request: dictionary containing title, and body text
-                  representing the entry to be added
-        Returns:
-             dictionary containing the entry_id of the new entry
-        """
-        entry_id = str(uuid.uuid4())
-        curr_entries = self.read_from_db()
-        curr_datetime = datetime.now()
-        curr_entries[entry_id] = {
-            "title": request["title"],
-            "body": request["body"],
-            "date_created": curr_datetime.strftime("%m/%d/%Y"),
-            "time_created": curr_datetime.strftime("%H:%M"),
-        }
-        self.write_to_db(curr_entries)
-        return {"entry_id": str(entry_id)}
-
-    def read_entry(self, request: dict) -> dict:
-        """
-        Reads all current diary entries from the database and pretty prints them.
-
-        Args:
-            request: a dictionary a single key, "entry_id" whose value is the id of the entry to be read
-        Returns:
-            a dictionary containing title, body, date_created, and time_created of the requested entry_id
-        """
-        curr_entries = self.read_from_db()
-        return curr_entries[request["entry_id"]]
-
-    def update_entry(self, request: dict) -> dict:
+    @staticmethod
+    def update_entry(request: dict) -> dict:
         """
         Updates the entry specified by request parameter. The user may update the body text or title
         of a given entry.
@@ -78,14 +81,15 @@ class Diary:
         Returns:
             a dictionary containing the updated entry
         """
-        curr_entries = self.read_from_db()
+        entry = Entry.query.get(request["entry_id"])
         entry_id = request["entry_id"]
-        curr_entries[entry_id]["body"] = request["body"]
-        curr_entries[entry_id]["title"] = request["title"]
-        self.write_to_db(curr_entries)
-        return {request["entry_id"]: curr_entries[entry_id]}
+        entry.body = request["body"]
+        entry.title = request["title"]
+        db.session.commit()
+        return {entry_id: entry}
 
-    def delete_entry(self, request: dict) -> dict:
+    @staticmethod
+    def delete_entry(request: dict) -> dict:
         """
         Deletes the entry with the id specified by the request parameter.
 
@@ -96,23 +100,33 @@ class Diary:
             dictionary containing the id of the entry that was deleted
         """
         entry_id = request.get("entry_id")
-        curr_entries = self.read_from_db()
-        curr_entries.pop(entry_id)
-        self.write_to_db(curr_entries)
+        deleted_entry = Entry.query.get(entry_id)
+        db.session.delete(deleted_entry)
+        db.session.commit()
 
         return {"entry_id": entry_id}
 
-    def is_id_invalid(self, entry_id: int):
+    @staticmethod
+    def search_entries(search_query: str, user_id: str) -> dict:
         """
-        Checks whether an id matches an existing diary entry or not.
+        Returns entries that contain the keywords in the search query. The search is not case-sensitive.
+        An entry matches the search query if it contains all keywords in its title or body text.
 
         Args:
-            entry_id: an int which represents the id of a diary entry
+            search_query: a string containing keywords to search for in the query. For example, a string of
+            "apple pear" has two keywords of "apple" and "pear".
+            user_id: string representing the id of the user the entry belongs to
 
         Returns:
-             is_invalid: boolean representing if the id is invalid or not. The value is true if the id is invalid,
-             meaning that it does not match an existing diary entry. The value is false if the id is valid, meaning that
-             it does match an existing entry.
+            dictionary containing the entries that match the search query
         """
-        saved_entries = self.read_from_db()
-        return str(entry_id) not in saved_entries.keys()
+        matching_entries = Entry.query.filter_by(user_id=user_id)
+        for keyword in search_query.split(' '):
+            matching_entries = matching_entries.filter(Entry.title.ilike("%" + keyword + "%") |
+                                                       Entry.body.ilike("%" + keyword + "%"))
+
+        entry_dict = {}
+        for entry in matching_entries:
+            entry_dict[entry.id] = entry
+
+        return entry_dict
