@@ -16,27 +16,19 @@ This repository contains the implementation for the Personal Diary application. 
    ```
 3. Run the image inside the container
     ```commandline
-   docker run --name personal-diary -i -t -d personal-diary:team_02
+   docker run --name personal-diary -p 5001:5001 -d personal-diary:team_02
    ```
+   
+### Accessing the Application
 
-### Entering the Container
-
-1. Run the following command to enter the container
-
-```commandline
-docker exec -i -t personal-diary bash
-```
-
-See the [Using Your Personal Diary](#using-your-personal-diary) section for the commands you can 
-run to use the application
-
-2. If you would like to exit the container, type `exit` into the container terminal.
+Navigate to [http://127.0.0.1:5001]() in your browser to visit the diary application website.
 
 ### Stop and Remove the Container
 
-In order to stop and remove the container, run the following command
+In order to stop and remove the container, run the following commands
 ```commandline
-docker stop personal-diary && docker rm personal-diary
+docker stop personal-diary
+docker rm personal-diary
 ```
 
 ## Using Your Personal Diary

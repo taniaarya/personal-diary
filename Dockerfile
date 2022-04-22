@@ -8,7 +8,9 @@ WORKDIR /personal-diary
 
 RUN pip install -r requirements.txt
 
-RUN apt-get update
-RUN apt-get -y install nano
-
 WORKDIR /personal-diary/personal_diary
+
+EXPOSE 5001
+
+ENTRYPOINT [ "python" ]
+CMD [ "app.py" ]

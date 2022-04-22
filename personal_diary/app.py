@@ -204,4 +204,4 @@ def create_app(db_name):
 
 if __name__ == '__main__':
     app = create_app("database.db")
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=5001)

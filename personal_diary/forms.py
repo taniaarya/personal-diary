@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, SearchField
-from wtforms.validators import InputRequired, Length
+from wtforms.validators import DataRequired, Length
 from flask_ckeditor import CKEditorField
 
 
@@ -10,11 +10,11 @@ class CreateEntryForm(FlaskForm):
     The title may only be at most 80 characters long, and the body may only be 300 characters long.
     """
     title = StringField('Title',
-                        validators=[InputRequired(), Length(min=1, max=80)],
+                        validators=[DataRequired(), Length(min=1, max=80)],
                         render_kw={'class': 'col-md-10'}
                         )
     body = CKEditorField('Body',
-                         validators=[InputRequired(), Length(min=1, max=300)],
+                         validators=[DataRequired(), Length(min=1, max=300)],
                          render_kw={'class': 'col-md-10', 'rows': '10'}
                          )
     submit = SubmitField("Create Entry")
@@ -34,11 +34,11 @@ class UpdateEntryForm(FlaskForm):
     The title may only be at most 80 characters long, and the body may only be 300 characters long.
     """
     title = StringField('Title',
-                        validators=[InputRequired(), Length(min=1, max=80)],
+                        validators=[DataRequired(), Length(min=1, max=80)],
                         render_kw={'class': 'col-md-10'}
                         )
     body = CKEditorField('Body',
-                         validators=[InputRequired(), Length(min=1, max=300)],
+                         validators=[DataRequired(), Length(min=1, max=300)],
                          render_kw={'class': 'col-md-10', 'rows': '10'}
                          )
     submit = SubmitField("Save Changes")
@@ -51,13 +51,13 @@ class SignupForm(FlaskForm):
     and a password (8-15 characters).
     """
     username = StringField('Username',
-                           validators=[InputRequired(), Length(min=1, max=15)],
+                           validators=[DataRequired(), Length(min=1, max=15)],
                            )
     full_name = StringField('Full Name',
-                            validators=[InputRequired(), Length(min=1, max=30)],
+                            validators=[DataRequired(), Length(min=1, max=30)],
                             )
     password = PasswordField('Password (8-15 Characters)',
-                             validators=[InputRequired(), Length(min=8, max=15)]
+                             validators=[DataRequired(), Length(min=8, max=15)]
                              )
     submit = SubmitField("Sign Up")
 
@@ -68,9 +68,9 @@ class LoginForm(FlaskForm):
     A user must enter a username and password.
     """
     username = StringField('Username',
-                           validators=[InputRequired(), Length(min=1, max=15)],
+                           validators=[DataRequired(), Length(min=1, max=15)],
                            )
-    password = PasswordField('Password (8-15 Characters)',
-                             validators=[InputRequired()]
+    password = PasswordField('Password',
+                             validators=[DataRequired()]
                              )
     login = SubmitField("Login")
