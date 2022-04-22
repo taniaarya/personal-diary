@@ -51,6 +51,40 @@ class ApplicationTestGETAll(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
+class ApplicationTestSearchPOST(TestCase):
+
+    def setUp(self) -> None:
+        self.client = set_up_flask_app_test_client()
+        self.test_user = create_test_user()
+
+    def tearDown(self) -> None:
+        tear_down_flask_test()
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_post_can_send_json(self, current_user):
+        current_user.return_value = self.test_user
+        response = self.client.post('/', data=dict(
+            search="search term",
+        ), follow_redirects=True)
+        self.assertTrue(response is not None)
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_post_valid_json_returns_success_response(self, current_user):
+        current_user.return_value = self.test_user
+        response = self.client.post('/', data=dict(
+            search="search term",
+        ), follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_successful_create_redirects_to_home(self, current_user):
+        current_user.return_value = self.test_user
+        response = self.client.post('/', data=dict(
+            search="search term",
+        ), follow_redirects=True)
+        self.assertEqual(response.request.path, "/")
+
+
 class ApplicationTestReadEntryGET(TestCase):
 
     def setUp(self) -> None:
@@ -269,7 +303,7 @@ class ApplicationTestSignupGET(TestCase):
 
     def test_get_can_send_json(self):
         response = self.client.get("/signup")
-        self.assertEqual(response is not None, True)
+        self.assertTrue(response is not None)
 
     def test_get_valid_json_returns_success_response_get(self):
         response = self.client.get("/signup")
@@ -290,7 +324,7 @@ class ApplicationTestSignupPOST(TestCase):
 
     def test_post_can_send_json(self):
         response = self.client.post("/signup")
-        self.assertEqual(response is not None, True)
+        self.assertTrue(response is not None)
 
     def test_post_valid_json_returns_success_response_get(self):
         response = self.client.post("/signup")
@@ -329,7 +363,7 @@ class ApplicationTestLoginGET(TestCase):
 
     def test_get_can_send_json(self):
         response = self.client.get("/login")
-        self.assertEqual(response is not None, True)
+        self.assertTrue(response is not None)
 
     def test_get_valid_json_returns_success_response_get(self):
         response = self.client.get("/login")
@@ -349,11 +383,11 @@ class ApplicationTestLoginPOST(TestCase):
 
     def test_post_can_send_json(self):
         response = self.client.post("/login")
-        self.assertEqual(response is not None, True)
+        self.assertTrue(response is not None)
 
     def test_post_valid_json_returns_success_response_get(self):
         response = self.client.post("/login")
-        self.assertTrue(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_successful_login_redirects_to_home(self):
         user = User(id="1", username="username", name="Test User", password=generate_password_hash("password123"))
