@@ -1,6 +1,6 @@
 import os
 from flask import Flask, Markup, render_template, url_for, redirect, flash, abort
-from flask_login import LoginManager, login_user, current_user
+from flask_login import LoginManager, login_user, current_user, login_required, logout_user
 from personal_diary.diary import Diary
 from personal_diary import db
 from personal_diary.forms import CreateEntryForm, UpdateEntryForm, SignupForm, SearchEntryForm, LoginForm
@@ -37,6 +37,7 @@ def create_app(db_name):
         db.create_all()
 
     @flask_app.route("/", methods=['GET', 'POST'])
+    @login_required
     def read_entries():
         """
         Renders the page showing a list of the current entries or entries matching the user's search query.
@@ -52,6 +53,7 @@ def create_app(db_name):
         return render_template("index.html", entries=all_entries, form=search_form)
 
     @flask_app.route("/entry/<entry_id>", methods=['GET'])
+    @login_required
     def read_single_entry(entry_id: str):
         """
         Renders the page showing the title and body for a diary entry.
@@ -70,6 +72,7 @@ def create_app(db_name):
         return render_template("read_single_entry.html", entry=entry)
 
     @flask_app.route("/create", methods=['GET', 'POST'])
+    @login_required
     def create_entry():
         """
         Renders the page with a form for users to input the title and body for an entry.
@@ -87,6 +90,7 @@ def create_app(db_name):
         return render_template("create_entry.html", form=create_form)
 
     @flask_app.route("/edit/<entry_id>", methods=["GET", "POST"])
+    @login_required
     def update_entry(entry_id: str):
         """
         Renders the page with fields for a user to update the title and body text of an entry. After updating
@@ -116,6 +120,7 @@ def create_app(db_name):
         return render_template("update_entry.html", form=update_form, entry=entry)
 
     @flask_app.route("/delete/<entry_id>", methods=['GET'])
+    @login_required
     def delete_entry(entry_id: str):
         """
         Deletes the entry with the given entry_id. It redirects back to the
@@ -187,6 +192,12 @@ def create_app(db_name):
             return redirect(url_for("read_entries"))
 
         return render_template("login.html", form=login_form)
+
+    @flask_app.route('/logout')
+    @login_required
+    def logout():
+        logout_user()
+        return redirect(url_for('login'))
 
     return flask_app
 
