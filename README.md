@@ -21,7 +21,7 @@ This repository contains the implementation for the Personal Diary application. 
    
 ### Accessing the Application
 
-Navigate to [http://127.0.0.1:5001]() in your browser to visit the diary application website.
+Navigate to [http://127.0.0.1:5001](http://127.0.0.1:5001) in your browser to visit the diary application website.
 
 ### Stop and Remove the Container
 
