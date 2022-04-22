@@ -11,6 +11,7 @@ def set_up_flask_app_test_client():
     flask_app = create_app("test_database.db")
     flask_app.config['TESTING'] = True
     flask_app.config['WTF_CSRF_ENABLED'] = False
+    flask_app.config["LOGIN_DISABLED"] = True
     flask_app.app_context().push()
     return flask_app.test_client()
 
