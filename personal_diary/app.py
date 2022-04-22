@@ -85,6 +85,7 @@ def create_app(db_name):
                 "user_id": current_user.id
             }
             Diary.create_entry(create_request)
+            flash("Entry created!", "alert-success")
             return redirect(url_for("read_entries"))
 
         return render_template("create_entry.html", form=create_form)
@@ -112,6 +113,7 @@ def create_app(db_name):
                 "user_id": current_user.id
             }
             Diary.update_entry(update_request)
+            flash("Entry updated!", "alert-success")
             return redirect(url_for("read_entries"))
 
         update_form.title.data = entry.title
