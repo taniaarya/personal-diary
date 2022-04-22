@@ -32,77 +32,76 @@ docker rm personal-diary
 ```
 
 ## Using Your Personal Diary
-There are currently four operations that the user can perform within their Personal Diary. They can create an entry, view all entries, edit an entry, and delete an entry.
+There are currently four operations that the user can perform within their Personal Diary. They can create an entry, view all entries, edit an entry, and delete an entry. They can also create an account that is used to save and access their entries.
 
-### Creating A Diary Entry
-On the command line interface, the user can input the command `python diary_cli.py create` to create a new diary entry.
+### Creating an Account and Logging In
+Upon entering the Personal Diary, the user is first asked to sign in. To first create an account, click the "Sign up" button on the top corner and fill out the fields.
 
-The user first types in the title of their new diary entry. Then, a text editor will open where the user can type in the body of their new diary entry. Saving the entry on the editor window will successfully create and save the entry. A confirmation is given through the command line interface. Otherwise, the interface will notify the user that nothing was saved.
+Once the account is created, you can log in using these credentials on the Log In page.
 
 ### Viewing All Diary Entries
-On the command line interface, the user can input the command `python diary_cli.py view_all` to view all saved diary entries.
+Upon logging in, the user will see their diary Home Page. On this Home Page is their list of diary entries, displayed by their title and date created. They are sorted from most recent to oldest. The user can select an entry to view, or search for an entry using the search bar.
 
-The list will be displayed in descending order of creation. Each entry's ID, date of creation, and title is displayed.
+### Searching Through Entries
+In the search bar at the top of the Home Page, the user can search for entries by keyword. Searching will then sort and display the specific entries that contain the keyword(s) inputted.
+
+### Creating A Diary Entry
+The user can create a new diary entry by pressing the Create Entry button at the top of the Home Page. The user can then create a new entry by giving it a title and contents. There are options to customize the appearance of the journal entry through the toolbar, such as changing the text color or background. 
+
+Once the done writing the entry, press the Save button to store the entry and return to the Home Page.
 
 ### Reading A Single Diary Entry
-
-On the command line interface, the user can input the command `python diary_cli.py read` to view all information about a specific entry.
-
-A prompt will ask for the user to input the ID assigned to the existing diary entry they wish to view. If no such ID exists, the command fails. 
-
-If the ID does exist, the title, body, date of creation, and time of creation will be displayed.
+The user can select a diary entry among the saved entries from the Home Page. Clicking an entry's title will take you to its page to view.
 
 ### Editing A Diary Entry
-On the command line interface, the user can input the command `python diary_cli.py edit` to edit a diary entry. 
-
-A prompt will ask for the user to input the ID assigned to the diary entry they wish to edit. If no such ID exists, the command fails. 
-
-If the ID does exist, the user is given the choice to update their title. If no updated title is given, the original title will be passed in. A text editor will open in a new window where the user can make edits to the diary entry. Saving the file will update the entry in the database.
+The user can select an entry then edit it by clicking the Edit button. Both the title and contents can be edited. There is also a text editor for editing entries with similar customization options as creating.
 
 ### Deleting A Diary Entry
-On the command line interface, the user can input the command `python diary_cli.py delete` to delete a diary entry.
-
-A prompt will ask for the user to input the ID assigned to the existing diary entry they wish to delete. If no such ID exists, the command fails.
-
-If the ID does exist, they must confirm that they want to delete the specified entry by typing "Y" or "N". 
-
-### Help Menu
-To access the help menu and commands at any time, type `python diary_cli.py --help` in the command line interface.
+To delete an entry, select it from the Home Page and click the red Delete button. A message at the top of the Home Page will confirm that the entry has been permanently deleted. 
 
 ## Developer Documentation
 The `personal-diary` folder contains the code for the implementation of the Personal Diary. It primarily contains two folders: `personal_diary`, which contains the classes and implementation for the application and `tests`, which contains the unit and feature tests for the implementation. There is also the `requirements.txt` file which lists all libraries used by the application that need to be downloaded.
 
 ### personal_diary
 Within the `personal_diary` folder is the following:
+- `app.py`: the Python file containing code for Personal Diary's Flask app.
 - `diary.py`: the Python file containing the `Diary` class, representing the Personal Diary. Currently, includes the basic CRUD functions within the diary and functions for reading from and writing to the local database.
-- `diary_cli.py`: the Python file containing code for Personal Diary's click command line interface.
-- `entry_local_storage.json`: the json file stored locally that saves Personal Diary entry information.
-- `app.py`: the Python file containing the initial route setup for a Flask application
+- `diary_user.py`: the Python file containing the class with helper functions related to creating, reading, updating, and deleting a diary user.
+- `forms.py`: the Python file with code for the form used for user to add a new entry to the diary by inputting a title and body.
+- `models.py`: the Python file with code for the data model of the diary entries.
+- `personal-diary/templates`: This folder contains html files that are used as templates for the pages used in the Flask app.
+- `personal-diary/static`: This folder contains the custom build of CKEditor used for the Personal Diary's text fields.
 
 ### tests
 Within the `tests` folder is the following:
 - `test_diary.py`: the Python unit test file that tests all functions in the `Diary` class.
-- `test_app.py`: the Python integration test file to test Flask REST endpoints
-- `test_app_integration.py`: the Python integration test file for diary's CRUD operations
+- `test_app.py`: the Python integration test file to test Flask REST endpoints.
+- `test_diary_integration.py`: the Python integration test file for diary's CRUD operations.
+- `test_diary_user.py`: the Python test suite for user-related operations.
 
 ## Team Member Split
 ### Tania (20%)
-- Worked on researching Docker and Dockerizing the application
-- Wrote documentation on how to run and install application
-- Implemented create_entry operation including how IDs were generated and wrote associated tests 
-- Maintained merge requests
+- Setup SQL database connection using Flask-SQLAlchemy
+- Implemented sign up page and user management
+- Refactored backend code to work specifically for the current user that is logged in
+- Implemented create_entry and sign_up page of Flask UI
+- Added 404 errors for invalid pages/requests
+- Updated tests for flask routes to check redirects and status code
 ### Mausam (20%)
-- Researched and set-up Flask base 
-- Implemented read_entry operation and wrote associated tests.
-- Wrote app integration tests with backend CRUD operations and Flask routes 
+- Implemented login page
+- Implemented read_enty page of Flask UI
+- Refactored integration tests
 ### Max (20%)
-- Researched and implemented Click command-line interface integration with CRUD operations 
-- Tested and debugged Click operations and user interactions through the CLI 
-- Implemented delete_entry operation with associated tests
+- Implemented delete_entry to be accessible through the Flask UI
+- Implemented the home page of the Flask UI
+  - Displays list of entries
+  - Search functionality
+  - Displays number of entries in the list 
+- Refactored code and updated comments
 ### Danielle (20%)
-- Set up and tested CI/CD pipeline yaml file, ensuring that directories and environment variables were set correctly
-- Wrote base README (including full instructions on how to use the CLI commands)
+- Integrated the rich text editor plugin
+- Refactored CRUD operations and tests to use SQLAlchemy database
+- Updated README documentation
 ### Amarachi (20%)
-- Researched Click command-line interface tutorials and starter code
-- Implemented update_entry operation with associated tests
-- Cleaned up code in create_entry and update_entry
+- Wrote tests for the search_entries function
+- Implemented update_entry page of Flask UI
