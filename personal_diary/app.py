@@ -201,6 +201,16 @@ def create_app(db_name):
         logout_user()
         return redirect(url_for('login'))
 
+    @flask_app.route("/delete-user", methods=['GET'])
+    @login_required
+    def delete_user():
+        """
+        Deletes the user with the given user_id. It redirects back to the login screen after completion.
+        """
+        DiaryUser.delete_user({"user": current_user})
+        flash("User account deleted!", "alert-success")
+        return redirect(url_for("login"))
+    
     return flask_app
 
 
