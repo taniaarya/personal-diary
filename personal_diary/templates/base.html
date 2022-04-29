@@ -35,9 +35,17 @@ The base HTML template file that the other pages extend from. It includes a navi
                     </li>
                     {% endif %}
                     {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-                    </li>
+                    <div class="dropdown nav-item me-5">
+                      <a class="btn btn-secondary dropdown-toggle" href="{{ url_for('logout') }}" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                        Account Actions
+                      </a>
+
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                          <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                          <li><hr class="dropdown-divider"></li>
+                          <li><a class="dropdown-item text-danger" href="{{ url_for('delete_user') }}">Delete Account</a></li>
+                      </ul>
+                    </div>
                     {% endif %}
                 </ul>
             </div>
