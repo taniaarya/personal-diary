@@ -18,7 +18,13 @@ The base HTML template file that the other pages extend from. It includes a navi
 <body>
     <nav class="navbar navbar-expand-sm navbar-light bg-light">
         <div class="container-fluid ">
-            <a class="navbar-brand " href="/">Personal Diary</a>
+            <a class="navbar-brand " href="/">
+            {% if current_user.is_authenticated %}
+                {{current_user.name}}'s Personal Diary
+            {% else %}
+                Personal Diary
+            {% endif %}
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
