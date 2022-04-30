@@ -50,7 +50,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(15), unique=True)
     name = db.Column(db.String(30))
     password = db.Column(db.String(15))
-    entries = db.relationship('Entry', backref='Users', lazy=True)
+    entries = db.relationship('Entry', backref='Users', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
         return '<User {}>'.format(self.id)
