@@ -232,9 +232,9 @@ class DiaryTestSearchEntries(unittest.TestCase):
     def test_search_multiple_entries_match_returns_correct_entries(self):
         DiaryTestSearchEntries.populate_multiple_entries()
 
-        self.assertEqual(list(Diary.search_entries("day", "1").keys()), ["2", "3"])
+        self.assertEqual(set(Diary.search_entries("day", "1").keys()), {"2", "3"})
 
-        self.assertEqual(list(Diary.search_entries("good", "1").keys()), ["2"])
+        self.assertEqual(set(Diary.search_entries("good", "1").keys()), {"2"})
 
 
 if __name__ == '__main__':

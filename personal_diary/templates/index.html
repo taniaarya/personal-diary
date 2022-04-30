@@ -15,22 +15,49 @@ Args:
 <div>
     <a href="{{ url_for('create_entry') }}" class="btn btn-primary mt-4 mb-4" role="button">Create an Entry</a>
 
-    <form method="post" action="" style="max-width:600px">
-        {{ form.csrf_token }}
-        {{ form.search }}
+    <form style="max-width:600px" class="mb-2">
+        {{ form.search(value=search_query) }}
         {{ form.submit }}
     </form>
+
+    <div class="btn-group">
+        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            {% if sort_type|string() == "created_desc" %}
+                Date Created (Desc)
+            {% elif sort_type|string() == "created_asc" %}
+                Date Created (Asc)
+            {% elif sort_type|string() == "modified_desc" %}
+                Date Modified (Desc)
+            {% elif sort_type|string() == "modified_asc" %}
+                Date Modified (Asc)
+            {% endif %}
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ url_for('read_entries',
+            sort_type='created_desc', search=search_query) }}">Date Created (Desc)</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('read_entries',
+            sort_type='modified_desc', search=search_query) }}">Date Modified (Desc)</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('read_entries',
+            sort_type='created_asc', search=search_query) }}">Date Created (Asc)</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('read_entries',
+            sort_type='modified_asc', search=search_query) }}">Date Modified (Asc)</a></li>
+        </ul>
+    </div>
 
     {% if entries|length == 0 %}
         <p>There are no entries.</p>
     {% else %}
         <p class="text-secondary" style="font-size: 16px">Entries: {{entries|length}}</p>
-        {% for entry_id, entry in entries.items()|reverse %}
+        {% for entry_id, entry in entries.items() %}
             <div style="width: 800px">
-                    <a style="font-size: 18px"
-                       href="{{ url_for('read_single_entry', entry_id=entry.id) }}">{{entry.title}}
-                    </a>
-                    <p style="font-size: 16px" class="mb-4">Created: {{entry.created.replace(microsecond=0)}}</p>
+                <a style="font-size: 18px"
+                   href="{{ url_for('read_single_entry', entry_id=entry.id) }}">{{entry.title}}
+                </a>
+                <p style="font-size: 16px" class="mb-4">
+                    Created: {{entry.created.replace(microsecond=0)}}
+                    <br>
+                    Modified: {{entry.modified.replace(microsecond=0)}}
+                </p>
             </div>
         {% endfor %}
     {% endif %}

@@ -1,5 +1,5 @@
 import os
-from flask import Flask, Markup, render_template, url_for, redirect, flash, abort
+from flask import Flask, Markup, render_template, url_for, redirect, flash, abort, request
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
 from personal_diary.diary import Diary
 from personal_diary import db
@@ -36,21 +36,22 @@ def create_app(db_name):
     with flask_app.app_context():
         db.create_all()
 
-    @flask_app.route("/", methods=['GET', 'POST'])
+    @flask_app.route("/", methods=['GET'])
     @login_required
     def read_entries():
         """
         Renders the page showing a list of the current entries or entries matching the user's search query.
         """
-        search_form = SearchEntryForm()
-        if search_form.validate_on_submit():
-            search_query = search_form.data["search"]
-            return render_template("index.html",
-                                   entries=Diary.search_entries(search_query, current_user.id),
-                                   form=search_form)
+        sort_type = request.args.get('sort_type', default="created_desc")
 
-        all_entries = Diary.read_all_entries(current_user.id)
-        return render_template("index.html", entries=all_entries, form=search_form)
+        search_query = request.args.get('search', default="")
+        search_form = SearchEntryForm()
+
+        return render_template("index.html",
+                               entries=Diary.search_entries(search_query, current_user.id, sort_type),
+                               form=search_form,
+                               search_query=search_query,
+                               sort_type=sort_type)
 
     @flask_app.route("/entry/<entry_id>", methods=['GET'])
     @login_required
