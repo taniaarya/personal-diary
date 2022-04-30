@@ -1,6 +1,26 @@
 from personal_diary import db
 from flask_login import UserMixin
 
+"""
+Association table for entries and tags, as describe by Flask-SQLAlchemy documentation
+"""
+tags = db.Table('tags',
+                db.Column('tag_id', db.Integer, db.ForeignKey('EntryTags.id'), primary_key=True),
+                db.Column('entry_id', db.String, db.ForeignKey('DiaryEntries.id'), primary_key=True)
+                )
+
+
+class Tag(db.Model):
+    """Data model for diary entry tags"""
+
+    __tablename__ = 'EntryTags'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+
+    def __repr__(self):
+        return '<Tag {}>'.format(self.id)
+
 
 class Entry(UserMixin, db.Model):
     """Data model for diary entries"""
@@ -12,7 +32,7 @@ class Entry(UserMixin, db.Model):
     body = db.Column(db.Text, unique=False, nullable=False)
     created = db.Column(db.DateTime, unique=False, nullable=False)
     modified = db.Column(db.DateTime, unique=False, nullable=True)
-    folder = db.Column(db.String(), unique=False, nullable=True)
+    tags = db.relationship('Tag', secondary=tags, lazy='subquery', backref=db.backref('entries', lazy=True))
     user_id = db.Column(db.String(), db.ForeignKey('Users.id'), nullable=False)
     mood = db.Column(db.Text, unique=False, nullable=False)
 

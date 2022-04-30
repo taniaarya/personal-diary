@@ -22,7 +22,7 @@ class ApplicationTestCaseEndToEnd(TestCase):
     def test_CRUD_operations_sequentially(self):
         response_list = []
         entry_ids = []
-        valid_request_json = {"title": "Title", "body": "Body", "user_id": "1", "mood":"&#128512"}
+        valid_request_json = {"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1"], "mood":"&#128512"}
 
         # test create entry
         for index in range(0, 50):
@@ -31,7 +31,7 @@ class ApplicationTestCaseEndToEnd(TestCase):
             response_list.append(create_entry_result)
 
         # test read all entries
-        read_all_entries_result = self.diary.read_all_entries("1")
+        read_all_entries_result = self.diary.read_all_entries("1", None)
         self.assertEqual(len(read_all_entries_result.keys()), 50)
 
         for entry_key, entry_val in read_all_entries_result.items():
@@ -47,8 +47,9 @@ class ApplicationTestCaseEndToEnd(TestCase):
             self.assertEqual(read_single_entry_result.body, "Body")
             self.assertEqual(read_single_entry_result.mood, "&#128512")
 
-        # test update entry
-            update_entry_result = self.diary.update_entry({"entry_id": entry_id, "title": "NewTitle", "body": "Edited", "mood":"&#128525"})
+            # test update entry
+            update_entry_result = self.diary.update_entry({"entry_id": entry_id, "title": "NewTitle", "body": "Edited",
+                                                           "tags": [], "mood":"&#128525"})
             self.assertEqual(len(update_entry_result.keys()), 1)
             self.assertEqual(list(update_entry_result.keys())[0], entry_id)
             self.assertEqual(update_entry_result[entry_id].title, "NewTitle")
@@ -59,7 +60,7 @@ class ApplicationTestCaseEndToEnd(TestCase):
             delete_entry_result = self.diary.delete_entry({"entry_id": entry_id})
             self.assertEqual(delete_entry_result["entry_id"], entry_id)
 
-        response_get_all_end = self.diary.read_all_entries("1")
+        response_get_all_end = self.diary.read_all_entries("1", None)
         self.assertEqual(len(response_get_all_end.keys()), 0)
 
 

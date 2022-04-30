@@ -38,6 +38,15 @@ Args:
                 {% endif %}
             </fieldset>
 
+            <fieldset class="form-field">
+                {{ form.tag1.label}}
+                {{ form.tag1 }}
+                {{ form.tag2.label}}
+                {{ form.tag2 }}
+                {{ form.tag3.label}}
+                {{ form.tag3 }}
+            </fieldset>
+
             {{ form.submit }}
 
         </form>
