@@ -334,7 +334,8 @@ class ApplicationTestSignupPOST(TestCase):
         response = self.client.post('/signup', data=dict(
             username="username",
             full_name="Test User",
-            password="password123"
+            password="password123",
+            confirm_password="password123"
         ), follow_redirects=True)
         self.assertEqual(response.request.path, "/login")
 
@@ -343,13 +344,30 @@ class ApplicationTestSignupPOST(TestCase):
         self.assertEqual(response.request.path, "/signup")
 
     def test_user_already_exists_redirects_to_signup_page(self):
-        user = User(id="1", username="username", name="Test User", password=generate_password_hash("password123"))
+        user = User(id="1", username="username",
+                    name="Test User",
+                    password=generate_password_hash("password123"))
         db.session.add(user)
         db.session.commit()
         response = self.client.post('/signup', data=dict(
             username="username",
             full_name="Test User",
-            password="password123"
+            password="password123",
+            confirm_password="password123"
+        ), follow_redirects=True)
+        self.assertEqual(response.request.path, "/signup")
+
+    def test_passwords_not_matching_redirects_to_signup_page(self):
+        user = User(id="1", username="username",
+                    name="Test User",
+                    password=generate_password_hash("password123"))
+        db.session.add(user)
+        db.session.commit()
+        response = self.client.post('/signup', data=dict(
+            username="username",
+            full_name="Test User",
+            password="password123",
+            confirm_password="password456"
         ), follow_redirects=True)
         self.assertEqual(response.request.path, "/signup")
 

@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, SearchField, SelectField
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, Length, EqualTo
 from flask_ckeditor import CKEditorField
 
 
@@ -48,7 +48,8 @@ class SignupForm(FlaskForm):
     """
     Form used for user to register a new User account.
     The user must input a unique username (max 15 characters), full name (max 30 characters),
-    and a password (8-15 characters).
+    and a password (8-15 characters). They must also confirm their password by inputting it again and ensuring the
+    input matches.
     """
     username = StringField('Username',
                            validators=[DataRequired(), Length(min=1, max=15)],
@@ -59,6 +60,14 @@ class SignupForm(FlaskForm):
     password = PasswordField('Password (8-15 Characters)',
                              validators=[DataRequired(), Length(min=8, max=15)]
                              )
+    # Verify that passwords match
+    confirm_password = PasswordField('Confirm Password',
+                                     validators=[
+                                         DataRequired(),
+                                         Length(min=8, max=15),
+                                         EqualTo("password", message="Passwords must match!")
+                                     ]
+                                     )
     submit = SubmitField("Sign Up")
 
 

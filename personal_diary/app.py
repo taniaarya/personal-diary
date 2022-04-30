@@ -152,7 +152,8 @@ def create_app(db_name):
             create_request = {
                 "username": signup_form.username.data,
                 "full_name": signup_form.full_name.data,
-                "password": generate_password_hash(signup_form.password.data)
+                "password": generate_password_hash(signup_form.password.data),
+                "confirm_password": generate_password_hash(signup_form.confirm_password.data)
             }
             # verify username does not already exist
             if User.query.filter_by(username=create_request["username"]).first():
