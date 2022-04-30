@@ -64,7 +64,7 @@ def create_app(db_name):
         """
         read_request = {
             "entry_id": entry_id,
-            "user_id": current_user.id
+            "user_id": current_user.id,
         }
         entry = Diary.read_single_entry(read_request)["entry"]
         if entry.user_id != current_user.id:
@@ -83,7 +83,8 @@ def create_app(db_name):
             create_request = {
                 "title": create_form.title.data,
                 "body": create_form.body.data,
-                "user_id": current_user.id
+                "user_id": current_user.id,
+                "mood": create_form.mood.data
             }
             Diary.create_entry(create_request)
             flash("Entry created!", "alert-success")
@@ -111,7 +112,8 @@ def create_app(db_name):
                 "entry_id": entry_id,
                 "title": update_form.title.data,
                 "body": update_form.body.data,
-                "user_id": current_user.id
+                "user_id": current_user.id,
+                "mood": update_form.mood.data
             }
             Diary.update_entry(update_request)
             flash("Entry updated!", "alert-success")

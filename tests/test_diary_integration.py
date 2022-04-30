@@ -22,7 +22,7 @@ class ApplicationTestCaseEndToEnd(TestCase):
     def test_CRUD_operations_sequentially(self):
         response_list = []
         entry_ids = []
-        valid_request_json = {"title": "Title", "body": "Body", "user_id": "1"}
+        valid_request_json = {"title": "Title", "body": "Body", "user_id": "1", "mood":"&#128512"}
 
         # test create entry
         for index in range(0, 50):
@@ -38,19 +38,22 @@ class ApplicationTestCaseEndToEnd(TestCase):
             self.assertEqual(entry_key in entry_ids, True)
             self.assertEqual(read_all_entries_result[entry_key].title, "Title")
             self.assertEqual(read_all_entries_result[entry_key].body, "Body")
+            self.assertEqual(read_all_entries_result[entry_key].mood, "&#128512")
 
         for entry_id in entry_ids:
             # test read single entry
             read_single_entry_result = self.diary.read_single_entry({"entry_id": entry_id}).get("entry")
             self.assertEqual(read_single_entry_result.title, "Title")
             self.assertEqual(read_single_entry_result.body, "Body")
+            self.assertEqual(read_single_entry_result.mood, "&#128512")
 
-            # test update entry
-            update_entry_result = self.diary.update_entry({"entry_id": entry_id, "title": "NewTitle", "body": "Edited"})
+        # test update entry
+            update_entry_result = self.diary.update_entry({"entry_id": entry_id, "title": "NewTitle", "body": "Edited", "mood":"&#128525"})
             self.assertEqual(len(update_entry_result.keys()), 1)
             self.assertEqual(list(update_entry_result.keys())[0], entry_id)
             self.assertEqual(update_entry_result[entry_id].title, "NewTitle")
             self.assertEqual(update_entry_result[entry_id].body, "Edited")
+            self.assertEqual(read_single_entry_result.mood, "&#128525")
 
             # test delete entry
             delete_entry_result = self.diary.delete_entry({"entry_id": entry_id})
