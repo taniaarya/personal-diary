@@ -12,7 +12,7 @@ app.app_context().push()
 class DiaryTestCreateEntry(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.valid_request = {"title": "Title", "body": "Body", "user_id": "1"}
+        self.valid_request = {"title": "Title", "body": "Body", "user_id": "1", "mood": "128512"}
 
     def tearDown(self) -> None:
         db.session.query(Entry).delete()
@@ -56,7 +56,7 @@ class DiaryTestReadSingleEntry(unittest.TestCase):
 
     def setUp(self) -> None:
         for entry_id in range(5):
-            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1")
+            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1", mood="&#128512")
             db.session.add(test_entry)
         db.session.commit()
 
@@ -87,13 +87,13 @@ class DiaryTestReadAllEntries(unittest.TestCase):
     @staticmethod
     def populate_multiple_entries():
         for entry_id in range(5):
-            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1")
+            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1", mood="&#128512")
             db.session.add(test_entry)
         db.session.commit()
 
     @staticmethod
     def populate_single_entry():
-        test_entry = Entry(id="1", title="Title", body="Body", created=datetime.now(), user_id="1")
+        test_entry = Entry(id="1", title="Title", body="Body", created=datetime.now(), user_id="1", mood="&#128512")
         db.session.add(test_entry)
         db.session.commit()
 
@@ -116,7 +116,7 @@ class DiaryTestReadAllEntries(unittest.TestCase):
         self.assertEqual(len(entries), 5)
 
     def test_read_only_returns_entries_matching_user_id_param(self):
-        test_entry = Entry(id="10", title="Title", body="Body", created=datetime.now(), user_id="2")
+        test_entry = Entry(id="10", title="Title", body="Body", created=datetime.now(), user_id="2", mood="&#128512")
         db.session.add(test_entry)
         db.session.commit()
         DiaryTestReadAllEntries.populate_multiple_entries()
@@ -128,7 +128,7 @@ class DiaryTestUpdateEntry(unittest.TestCase):
 
     def setUp(self) -> None:
         for entry_id in range(5):
-            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1")
+            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1", mood="&#128512")
             db.session.add(test_entry)
         db.session.commit()
 
@@ -137,7 +137,7 @@ class DiaryTestUpdateEntry(unittest.TestCase):
         db.session.commit()
 
     def test_single_update_with_new_body_valid_entry_id_and_title_returns_updated_entry(self):
-        Diary.update_entry({"entry_id": "1", "title": "value2", "body": "Hello Human!"})
+        Diary.update_entry({"entry_id": "1", "title": "value2", "body": "Hello Human!", "mood":"&#128512"})
         updated_entry = Entry.query.get("1")
         self.assertEqual(updated_entry.title, "value2")
         self.assertEqual(updated_entry.body, "Hello Human!")
@@ -146,7 +146,7 @@ class DiaryTestUpdateEntry(unittest.TestCase):
         for idx in range(10):
             new_title = "value" + str(idx)
             new_body = "Hello Human!" + str(idx)
-            Diary.update_entry({"entry_id": "1", "title": new_title, "body": new_body})
+            Diary.update_entry({"entry_id": "1", "title": new_title, "body": new_body, "mood":"&#128512"})
             updated_entry = Entry.query.get("1")
             self.assertEqual(updated_entry.title, new_title)
             self.assertEqual(updated_entry.body, new_body)
@@ -155,7 +155,7 @@ class DiaryTestUpdateEntry(unittest.TestCase):
         for entry_id in range(5):
             new_title = "value" + str(entry_id)
             new_body = "Hello Human!" + str(entry_id)
-            Diary.update_entry({"entry_id": str(entry_id), "title": new_title, "body": new_body})
+            Diary.update_entry({"entry_id": str(entry_id), "title": new_title, "body": new_body, "mood":"&#128512"})
             updated_entry = Entry.query.get(str(entry_id))
             self.assertEqual(updated_entry.title, new_title)
             self.assertEqual(updated_entry.body, new_body)
@@ -170,13 +170,13 @@ class DiaryTestDeleteEntry(unittest.TestCase):
     @staticmethod
     def populate_multiple_entries():
         for entry_id in range(5):
-            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1")
+            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1", mood="&#128512")
             db.session.add(test_entry)
         db.session.commit()
 
     @staticmethod
     def populate_single_entry():
-        test_entry = Entry(id="1", title="Title", body="Body", created=datetime.now(), user_id="1")
+        test_entry = Entry(id="1", title="Title", body="Body", created=datetime.now(), user_id="1", mood="&#128512")
         db.session.add(test_entry)
         db.session.commit()
 
@@ -204,9 +204,9 @@ class DiaryTestSearchEntries(unittest.TestCase):
     @staticmethod
     def populate_multiple_entries():
         entry_list = [
-            Entry(id="1", title="New Title", body="Hello World", created=datetime.now(), user_id="1"),
-            Entry(id="2", title="A new day", body="class was so good", created=datetime.now(), user_id="1"),
-            Entry(id="3", title="A long Day", body="Today was monday", created=datetime.now(), user_id="1")
+            Entry(id="1", title="New Title", body="Hello World", created=datetime.now(), user_id="1", mood="&#128512"),
+            Entry(id="2", title="A new day", body="class was so good", created=datetime.now(), user_id="1", mood="&#128512"),
+            Entry(id="3", title="A long Day", body="Today was monday", created=datetime.now(), user_id="1", mood="&#128512")
         ]
         for test_entry in entry_list:
             db.session.add(test_entry)

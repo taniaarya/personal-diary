@@ -38,6 +38,51 @@ Args:
                 {% endif %}
             </fieldset>
 
+            <fieldset class="form-field">
+                {{ form.mood.label }}<br>
+                {% for subfield in form.mood %}
+                <tr>
+                    <td>{{ subfield | safe }}</td>
+                    <td>{{ subfield.label | safe }}</td>
+                </tr>
+                {% endfor %}
+                {% if form.mood.errors %}
+                <ul class="errors">
+                    {% for error in form.body.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </fieldset>
+
+<!--            <fieldset class="form-field">-->
+<!--                {{ form.mood.label }}<br>-->
+<!--                {{ form.mood }}-->
+<!--                {% if form.mood.errors %}-->
+<!--                <ul class="errors">-->
+<!--                    {% for error in form.body.errors %}-->
+<!--                    <li>{{ error }}</li>-->
+<!--                    {% endfor %}-->
+<!--                </ul>-->
+<!--                {% endif %}-->
+<!--            </fieldset>-->
+
+            <!--            <fieldset>-->
+<!--                {{ form.mood.label }}<br>-->
+<!--                <input type="radio" name="today_mood" value="Love">&#128525<br>-->
+<!--                <input type="radio" name="today_mood" value="Sad">&#128532<br>-->
+<!--                <input type="radio" name="today_mood" value="Mad">&#128545<br>-->
+<!--                <input type="radio" name="today_mood" value="Happy">&#128512<br>-->
+<!--                <br>-->
+<!--                {% if form.body.errors %}-->
+<!--                <ul class="errors">-->
+<!--                    {% for error in form.body.errors %}-->
+<!--                    <li>{{ error }}</li>-->
+<!--                    {% endfor %}-->
+<!--                </ul>-->
+<!--                {% endif %}-->
+<!--            </fieldset>-->
+
             {{ form.submit }}
 
         </form>

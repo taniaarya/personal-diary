@@ -32,7 +32,8 @@ class Diary:
                       created=curr_datetime,
                       modified=curr_datetime,
                       folder=None,
-                      user_id=request["user_id"])
+                      user_id=request["user_id"],
+                      mood=request["mood"])
         db.session.add(entry)
         db.session.commit()
         return {"entry_id": new_entry_id}
@@ -89,6 +90,7 @@ class Diary:
         entry_id = request["entry_id"]
         entry.body = request["body"]
         entry.title = request["title"]
+        entry.mood = request["mood"]
         entry.modified = datetime.now()
         db.session.commit()
         return {entry_id: entry}

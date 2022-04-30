@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, SearchField, SelectField
+from markupsafe import Markup
+from wtforms import StringField, SubmitField, PasswordField, SearchField, RadioField, SelectField
 from wtforms.validators import DataRequired, Length, EqualTo
 from flask_ckeditor import CKEditorField
 
@@ -17,6 +18,13 @@ class CreateEntryForm(FlaskForm):
                          validators=[DataRequired(), Length(min=1, max=300)],
                          render_kw={'class': 'col-md-10', 'rows': '10'}
                          )
+    # mood = StringField('Mood',
+    #                    validators=[DataRequired()],
+    #                    render_kw={'class': 'col-md-10'}
+    #                     )
+
+    mood = RadioField('Mood', choices=[('&#128512', Markup('&#128512')), ('&#128525', Markup('&#128525')), ('&#128532', Markup('&#128532')), ('&#128545', Markup('&#128545'))], default="&#128512")
+
     submit = SubmitField("Create Entry")
 
 
@@ -41,6 +49,10 @@ class UpdateEntryForm(FlaskForm):
                          validators=[DataRequired(), Length(min=1, max=300)],
                          render_kw={'class': 'col-md-10', 'rows': '10'}
                          )
+    mood = StringField('Mood',
+                       validators=[],
+                       render_kw={'class': 'col-md-10'}
+                       )
     submit = SubmitField("Save Changes")
 
 

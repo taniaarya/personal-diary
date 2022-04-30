@@ -21,7 +21,7 @@ class DiaryUser:
         new_user = User(id=new_user_id,
                         username=request["username"],
                         name=request["full_name"],
-                        password=request["password"]
+                        password=request["password"],
                         )
         db.session.add(new_user)
         db.session.commit()

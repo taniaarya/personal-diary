@@ -14,8 +14,10 @@ class Entry(UserMixin, db.Model):
     modified = db.Column(db.DateTime, unique=False, nullable=True)
     folder = db.Column(db.String(), unique=False, nullable=True)
     user_id = db.Column(db.String(), db.ForeignKey('Users.id'), nullable=False)
+    mood = db.Column(db.Text, unique=False, nullable=False)
 
-    def __repr__(self):
+
+def __repr__(self):
         return '<Entry {}>'.format(self.id)
 
 
