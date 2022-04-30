@@ -1,7 +1,9 @@
 from datetime import datetime
 import uuid
+from sqlalchemy import desc, asc
 from personal_diary.models import Entry
 from personal_diary import db
+from typing import Iterable
 
 
 class Diary:
@@ -28,7 +30,7 @@ class Diary:
                       title=request["title"],
                       body=request["body"],
                       created=curr_datetime,
-                      modified=None,
+                      modified=curr_datetime,
                       folder=None,
                       user_id=request["user_id"])
         db.session.add(entry)
@@ -51,17 +53,19 @@ class Diary:
         return {"entry": entry}
 
     @staticmethod
-    def read_all_entries(user_id: str) -> dict:
+    def read_all_entries(user_id: str, sort_by: str = "created_desc") -> dict:
         """
         Reads all entries currently stored in local database.
 
         Args:
             user_id: string representing the id of the user the entry belongs to
+            sort_by: string indicating how entries should be sorted by
 
         Returns:
              dictionary containing all the stored entries, where each entry has an id, title, body, date, and time
         """
         all_entries = Entry.query.filter_by(user_id=user_id)
+        all_entries = Diary.sort_entries(all_entries, sort_by)
         entry_dict = {}
 
         for entry in all_entries:
@@ -85,6 +89,7 @@ class Diary:
         entry_id = request["entry_id"]
         entry.body = request["body"]
         entry.title = request["title"]
+        entry.modified = datetime.now()
         db.session.commit()
         return {entry_id: entry}
 
@@ -107,7 +112,7 @@ class Diary:
         return {"entry_id": entry_id}
 
     @staticmethod
-    def search_entries(search_query: str, user_id: str) -> dict:
+    def search_entries(search_query: str, user_id: str, sort_by: str = "created_desc") -> dict:
         """
         Returns entries that contain the keywords in the search query. The search is not case-sensitive.
         An entry matches the search query if it contains all keywords in its title or body text.
@@ -116,12 +121,18 @@ class Diary:
             search_query: a string containing keywords to search for in the query. For example, a string of
             "apple pear" has two keywords of "apple" and "pear".
             user_id: string representing the id of the user the entry belongs to
+            sort_by: string representing how entries should be sorted by
 
         Returns:
             dictionary containing the entries that match the search query
         """
         matching_entries = Entry.query.filter_by(user_id=user_id)
-        for keyword in search_query.split(' '):
+        matching_entries = Diary.sort_entries(matching_entries, sort_by)
+
+        if search_query is None:
+            return Diary.read_all_entries(user_id)
+
+        for keyword in search_query.split():
             matching_entries = matching_entries.filter(Entry.title.ilike("%" + keyword + "%") |
                                                        Entry.body.ilike("%" + keyword + "%"))
 
@@ -130,3 +141,14 @@ class Diary:
             entry_dict[entry.id] = entry
 
         return entry_dict
+
+    @staticmethod
+    def sort_entries(entries: Entry, sort_type: str) -> Iterable:
+        if sort_type == "created_asc":
+            return entries.order_by(asc(Entry.created))
+        elif sort_type == "modified_asc":
+            return entries.order_by(asc(Entry.modified))
+        elif sort_type == "modified_desc":
+            return entries.order_by(desc(Entry.modified))
+        else:
+            return entries.order_by(desc(Entry.created))

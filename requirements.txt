@@ -1,6 +1,7 @@
 click
 Flask
 Flask-SQLAlchemy
+SQLAlchemy
 Flask-Login
 Flask-WTF
 Werkzeug
