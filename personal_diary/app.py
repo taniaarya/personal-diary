@@ -36,11 +36,13 @@ def create_app(db_name):
     with flask_app.app_context():
         db.create_all()
 
-    @flask_app.route("/", methods=['GET'])
+    @flask_app.route("/", methods=['GET'], defaults={'tag_name': None})
+    @flask_app.route("/<tag_name>", methods=['GET', 'POST'])
     @login_required
-    def read_entries():
+    def read_entries(tag_name: str):
         """
         Renders the page showing a list of the current entries or entries matching the user's search query.
+        If a tag is specified, the entries will be further filtered by the tag name
         """
         sort_type = request.args.get('sort_type', default="created_desc")
 
@@ -48,10 +50,11 @@ def create_app(db_name):
         search_form = SearchEntryForm()
 
         return render_template("index.html",
-                               entries=Diary.search_entries(search_query, current_user.id, sort_type),
+                               entries=Diary.search_entries(search_query, current_user.id, tag_name, sort_type),
                                form=search_form,
                                search_query=search_query,
-                               sort_type=sort_type)
+                               sort_type=sort_type,
+                               tag_name=tag_name)
 
     @flask_app.route("/entry/<entry_id>", methods=['GET'])
     @login_required
@@ -64,7 +67,7 @@ def create_app(db_name):
         """
         read_request = {
             "entry_id": entry_id,
-            "user_id": current_user.id,
+            "user_id": current_user.id
         }
         entry = Diary.read_single_entry(read_request)["entry"]
         if entry.user_id != current_user.id:
@@ -80,9 +83,12 @@ def create_app(db_name):
         """
         create_form = CreateEntryForm()
         if create_form.validate_on_submit():
+            input_tags = [create_form.tag1.data, create_form.tag2.data, create_form.tag3.data]
+            nonempty_tags = [tag for tag in input_tags if tag]
             create_request = {
                 "title": create_form.title.data,
                 "body": create_form.body.data,
+                "tags": nonempty_tags,
                 "user_id": current_user.id,
                 "mood": create_form.mood.data
             }
@@ -108,10 +114,13 @@ def create_app(db_name):
 
         update_form = UpdateEntryForm()
         if update_form.validate_on_submit():
+            input_tags = [update_form.tag1.data, update_form.tag2.data, update_form.tag3.data]
+            nonempty_tags = [tag for tag in input_tags if tag]
             update_request = {
                 "entry_id": entry_id,
                 "title": update_form.title.data,
                 "body": update_form.body.data,
+                "tags": nonempty_tags,
                 "user_id": current_user.id,
                 "mood": update_form.mood.data
             }
@@ -121,6 +130,9 @@ def create_app(db_name):
 
         update_form.title.data = entry.title
         update_form.body.data = entry.body
+        update_form.tag1.data = entry.tags[0].name if len(entry.tags) >= 1 else ""
+        update_form.tag2.data = entry.tags[1].name if len(entry.tags) >= 2 else ""
+        update_form.tag3.data = entry.tags[2].name if len(entry.tags) >= 3 else ""
 
         return render_template("update_entry.html", form=update_form, entry=entry)
 

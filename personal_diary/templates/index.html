@@ -15,6 +15,10 @@ Args:
 <div>
     <a href="{{ url_for('create_entry') }}" class="btn btn-primary mt-4 mb-4" role="button">Create an Entry</a>
 
+    {% if tag_name %}
+        <h3>Showing entries with tag: {{ tag_name }} (<a href="{{ url_for('read_entries') }}">clear</a>)</h3>
+    {% endif %}
+
     <form style="max-width:600px" class="mb-2">
         {{ form.search(value=search_query) }}
         {{ form.submit }}
@@ -53,11 +57,20 @@ Args:
                 <a style="font-size: 18px"
                    href="{{ url_for('read_single_entry', entry_id=entry.id) }}">{{entry.title}}
                 </a>
-                <p style="font-size: 16px" class="mb-4">
+                <p style="font-size: 16px" class="mb-1">
                     Created: {{entry.created.replace(microsecond=0)}}
                     <br>
                     Modified: {{entry.modified.replace(microsecond=0)}}
                 </p>
+                <div class="mt-0 mb-4">
+                        {% if entry.tags %}
+                            Tags:&nbsp;
+                        {% endif %}
+
+                        {% for tag in entry.tags %}
+                            <a href="{{ url_for('read_entries', tag_name=tag.name) }}">{{ tag.name }}</a>&nbsp;
+                        {% endfor %}
+                </div>
             </div>
         {% endfor %}
     {% endif %}
