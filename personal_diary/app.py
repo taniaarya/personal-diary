@@ -43,6 +43,9 @@ def create_app(db_name):
         """
         Renders the page showing a list of the current entries or entries matching the user's search query.
         If a tag is specified, the entries will be further filtered by the tag name
+
+        Args:
+            tag_name: the name of a tag to filter entries by
         """
         sort_type = request.args.get('sort_type', default="created_desc")
 
