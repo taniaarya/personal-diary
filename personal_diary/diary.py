@@ -169,6 +169,17 @@ class Diary:
 
     @staticmethod
     def sort_entries(entries: Entry, sort_type: str) -> Iterable:
+        """
+        Sorts a collection of entries based on either date created or date modified.
+
+        Args:
+            entries: an Entry object that is used to do the sorting on
+            sort_type: a string indicating the type of sort to do. The sorting can be based on the date modified
+            or date created time, ascending or descending.
+
+        Returns:
+            a collection of sorted entries that can be iterated over
+        """
         if sort_type == "created_asc":
             return entries.order_by(asc(Entry.created))
         elif sort_type == "modified_asc":
