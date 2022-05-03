@@ -10,19 +10,21 @@ class CreateEntryForm(FlaskForm):
     Form used for user to add a new entry to the diary by inputting a title and body.
     The title may only be at most 80 characters long, and the body may only be 300 characters long.
     """
-    title = StringField('Title',
+    title = StringField('Title*',
                         validators=[DataRequired(), Length(min=1, max=80)],
-                        render_kw={'class': 'col-md-10'}
+                        render_kw={'class': 'col-md-10', 'placeholder': 'Enter title...'}
                         )
-    body = CKEditorField('Body',
+    body = CKEditorField('Body*',
                          validators=[DataRequired(), Length(min=1, max=300)],
                          render_kw={'class': 'col-md-10', 'rows': '10'}
                          )
     tag1 = StringField("Tag 1", render_kw={'class': 'col-md-1', 'placeholder': 'Tag 1'})
     tag2 = StringField("Tag 2", render_kw={'class': 'col-md-1', 'placeholder': 'Tag 2'})
     tag3 = StringField("Tag 3", render_kw={'class': 'col-md-1', 'placeholder': 'Tag 3'})
-    mood = RadioField('Mood', choices=[('&#128512', Markup('&#128512')), ('&#128525', Markup('&#128525')), ('&#128532', Markup('&#128532')), ('&#128545', Markup('&#128545'))], default="&#128512")
-    submit = SubmitField("Create Entry")
+    mood = RadioField('Mood', choices=[('&#128512', Markup('&#128512')), ('&#128525', Markup('&#128525')),
+                                       ('&#128532', Markup('&#128532')), ('&#128545', Markup('&#128545'))],
+                      default="&#128512")
+    submit = SubmitField("Create Entry", render_kw={'class': 'rounded-pill btn btn-dark float-end ml-2'})
 
 
 class SearchEntryForm(FlaskForm):
@@ -47,13 +49,15 @@ class UpdateEntryForm(FlaskForm):
                          render_kw={'class': 'col-md-10', 'rows': '10'}
                          )
 
-    mood = RadioField('Mood', choices=[('&#128512', Markup('&#128512')), ('&#128525', Markup('&#128525')), ('&#128532', Markup('&#128532')), ('&#128545', Markup('&#128545'))], default="&#128512")
+    mood = RadioField('Mood', choices=[('&#128512', Markup('&#128512')), ('&#128525', Markup('&#128525')),
+                                       ('&#128532', Markup('&#128532')), ('&#128545', Markup('&#128545'))],
+                      default="&#128512")
 
     tag1 = StringField("Tag 1", render_kw={'class': 'col-md-2', 'placeholder': 'Tag 1'})
     tag2 = StringField("Tag 2", render_kw={'class': 'col-md-2', 'placeholder': 'Tag 2'})
     tag3 = StringField("Tag 3", render_kw={'class': 'col-md-2', 'placeholder': 'Tag 3'})
 
-    submit = SubmitField("Save Changes")
+    submit = SubmitField("Save Changes", render_kw={'class': 'rounded-pill btn btn-dark float-end ml-2'})
 
 
 class SignupForm(FlaskForm):

@@ -133,7 +133,7 @@ def create_app(db_name):
             }
             Diary.update_entry(update_request)
             flash("Entry updated!", "alert-success")
-            return redirect(url_for("read_entries"))
+            return redirect(url_for("read_single_entry", entry_id=entry.id))
 
         update_form.title.data = entry.title
         update_form.body.data = entry.body

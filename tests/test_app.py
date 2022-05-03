@@ -237,14 +237,14 @@ class ApplicationTestUpdateEntryPOST(TestCase):
         self.assertEqual(response.status_code, 200)
 
     @mock.patch('flask_login.utils._get_user')
-    def test_successful_edit_redirects_to_home(self, current_user):
+    def test_successful_edit_redirects_to_read_single_entry(self, current_user):
         current_user.return_value = self.test_user
         response = self.client.post('/edit/{}'.format(self.entry_id), data=dict(
             title="Title",
             body="Body",
             mood="&#128512",
         ), follow_redirects=True)
-        self.assertEqual(response.request.path, "/")
+        self.assertEqual(response.request.path, f'/entry/{self.entry_id}')
 
     @mock.patch('flask_login.utils._get_user')
     def test_unsuccessful_edit_stays_on_create_page(self, current_user):
