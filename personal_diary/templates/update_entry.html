@@ -39,6 +39,23 @@ Args:
             </fieldset>
 
             <fieldset class="form-field">
+                {{ form.mood.label }}<br>
+                {% for subfield in form.mood %}
+                <tr>
+                    <td>{{ subfield | safe }}</td>
+                    <td>{{ subfield.label | safe }}</td>
+                </tr>
+                {% endfor %}
+                {% if form.mood.errors %}
+                <ul class="errors">
+                    {% for error in form.body.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </fieldset>
+
+            <fieldset class="form-field">
                 {{ form.tag1.label}}
                 {{ form.tag1 }}
                 {{ form.tag2.label}}

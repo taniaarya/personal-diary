@@ -46,13 +46,13 @@ class UpdateEntryForm(FlaskForm):
                          validators=[DataRequired(), Length(min=1, max=300)],
                          render_kw={'class': 'col-md-10', 'rows': '10'}
                          )
+
+    mood = RadioField('Mood', choices=[('&#128512', Markup('&#128512')), ('&#128525', Markup('&#128525')), ('&#128532', Markup('&#128532')), ('&#128545', Markup('&#128545'))], default="&#128512")
+
     tag1 = StringField("Tag 1", render_kw={'class': 'col-md-2', 'placeholder': 'Tag 1'})
     tag2 = StringField("Tag 2", render_kw={'class': 'col-md-2', 'placeholder': 'Tag 2'})
     tag3 = StringField("Tag 3", render_kw={'class': 'col-md-2', 'placeholder': 'Tag 3'})
-    mood = StringField('Mood',
-                       validators=[],
-                       render_kw={'class': 'col-md-10'}
-                       )
+
     submit = SubmitField("Save Changes")
 
 
