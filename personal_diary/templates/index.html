@@ -15,20 +15,23 @@ Args:
 -->
 
 {% block content %}
-<div>
-    <a href="{{ url_for('create_entry') }}" class="btn btn-primary mt-4 mb-4" role="button">Create an Entry</a>
+<div class="centered" style="width: 950px">
+    <a href="{{ url_for('create_entry') }}" class="create-btn btn btn-dark rounded-pill mt-4 mb-4">
+        <i class="fa fa-pencil"></i> Create Entry
+    </a>
 
     {% if tag_name %}
-        <h3>Showing entries with tag: {{ tag_name }} (<a href="{{ url_for('read_entries') }}">clear</a>)</h3>
+        <h3>Showing entries with tag: #{{ tag_name }} (<a href="{{ url_for('read_entries') }}">clear</a>)</h3>
     {% endif %}
 
-    <form style="max-width:600px" class="mb-2">
+    <form class="mb-2">
         {{ form.search(value=search_query) }}
         {{ form.submit }}
     </form>
 
-    <div class="btn-group">
+    <div class="btn-group align-right" >
         <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Sort:
             {% if sort_type|string() == "created_desc" %}
                 Date Created (Desc)
             {% elif sort_type|string() == "created_asc" %}
@@ -40,13 +43,13 @@ Args:
             {% endif %}
         </button>
         <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{{ url_for('read_entries',
+            <li><a class="dropdown-item" href="{{ url_for('read_entries', tag_name=tag_name,
             sort_type='created_desc', search=search_query) }}">Date Created (Desc)</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('read_entries',
+            <li><a class="dropdown-item" href="{{ url_for('read_entries',tag_name=tag_name,
             sort_type='modified_desc', search=search_query) }}">Date Modified (Desc)</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('read_entries',
+            <li><a class="dropdown-item" href="{{ url_for('read_entries', tag_name=tag_name,
             sort_type='created_asc', search=search_query) }}">Date Created (Asc)</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('read_entries',
+            <li><a class="dropdown-item" href="{{ url_for('read_entries',tag_name=tag_name,
             sort_type='modified_asc', search=search_query) }}">Date Modified (Asc)</a></li>
         </ul>
     </div>
@@ -54,25 +57,26 @@ Args:
     {% if entries|length == 0 %}
         <p>There are no entries.</p>
     {% else %}
-        <p class="text-secondary" style="font-size: 16px">Entries: {{entries|length}}</p>
+        <p class="text-secondary align-right" style="font-size: 16px">Entries: {{entries|length}}</p>
         {% for entry_id, entry in entries.items() %}
-            <div style="width: 800px">
-                <a style="font-size: 18px"
-                   href="{{ url_for('read_single_entry', entry_id=entry.id) }}">{{entry.title}}
-                </a>
-                <p style="font-size: 16px" class="mb-1">
-                    Created: {{entry.created.replace(microsecond=0)}}
-                    <br>
-                    Modified: {{entry.modified.replace(microsecond=0)}}
-                </p>
-                <div class="mt-0 mb-4">
-                        {% if entry.tags %}
-                            Tags:&nbsp;
-                        {% endif %}
-
-                        {% for tag in entry.tags %}
-                            <a href="{{ url_for('read_entries', tag_name=tag.name) }}">{{ tag.name }}</a>&nbsp;
-                        {% endfor %}
+            <div class="card mb-4" style="max-width: 950px;">
+                <div class="card-body">
+                    <a href="{{ url_for('read_single_entry', entry_id=entry.id) }}"
+                       class="card-title card-entry-title">
+                        {{entry.title}}
+                    </a>
+                     {{entry.mood|safe}}
+                    <p class="card-subtitle mb-3 mt-2 text-muted date">
+                        Created: {{entry.created.strftime('%m/%d/%Y %H:%M %p')}}
+                        <br>
+                        Modified: {{entry.modified.strftime('%m/%d/%Y %H:%M %p')}}
+                    </p>
+                    {% for tag in entry.tags %}
+                        <a class="btn btn-dark card-link rounded-pill tag"
+                           href="{{ url_for('read_entries', tag_name=tag.name) }}">
+                            #{{ tag.name }}
+                        </a>&nbsp;
+                    {% endfor %}
                 </div>
             </div>
         {% endfor %}

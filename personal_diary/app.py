@@ -51,13 +51,11 @@ def create_app(db_name):
             tag_name: the name of a tag to filter entries by
         """
         sort_type = request.args.get('sort_type', default="created_desc")
-
         search_query = request.args.get('search', default="")
-        search_form = SearchEntryForm()
 
         return render_template("index.html",
                                entries=Diary.search_entries(search_query, current_user.id, tag_name, sort_type),
-                               form=search_form,
+                               form=SearchEntryForm(),
                                search_query=search_query,
                                sort_type=sort_type,
                                tag_name=tag_name)
@@ -76,11 +74,11 @@ def create_app(db_name):
             "user_id": current_user.id
         }
         entry = Diary.read_single_entry(read_request)["entry"]
-        datetime_string = datetime.strftime(entry.created, '%m/%d/%Y %H:%M %p')
+
         if entry.user_id != current_user.id:
             abort(404)
 
-        return render_template("read_single_entry.html", entry=entry, datetime_string=datetime_string)
+        return render_template("read_single_entry.html", entry=entry)
 
     @flask_app.route("/create", methods=['GET', 'POST'])
     @login_required

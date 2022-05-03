@@ -7,3 +7,4 @@ Flask-WTF
 Werkzeug
 WTForms
 Flask-CKEditor
+MarkupSafe

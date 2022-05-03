@@ -1,0 +1,43 @@
+::-webkit-scrollbar {
+    width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: #9e9e9e8f;
+}
+
+.centered {
+    margin: auto;
+}
+
+.align-right {
+    text-align: right;
+}
+
+.card-entry-title {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+#search {
+    width: 880px;
+}
+
+.tag {
+    font-size: 14px;
+    color: black;
+    background-color: white;
+    border-color: black;
+    padding: 3px 12px 3px 12px;
+}
+
+.date {
+    font-size: 12px;
+}
+
+.create-btn {
+    position: fixed;
+    bottom: 0;
+    right: 20px;
+}
