@@ -9,24 +9,32 @@ Args:
 
 {% block content %}
 
-<div class="mb-2">
+<div class="mb-2 centered" style="width: 800px">
     <h2 style="width: 800px; overflow-wrap: break-word" class="title d-inline">{{entry.title}}</h2>
     <h4 class="d-inline mx-2 align-baseline"> {{entry.mood|safe}} </h4>
 </div>
 
 
-<div style="width: 800px">
+<div class="centered" style="width: 800px">
     <div>
-        <p style="font-size: 16px" class="mb-4 text-secondary">Created: {{datetime_string}}</p>
+        <p style="font-size: 14px" class="mb-4 text-muted">
+            Created: {{entry.created.strftime('%m/%d/%Y %H:%M %p')}}
+            <br>
+            Modified: {{entry.modified.strftime('%m/%d/%Y %H:%M %p')}}
+        </p>
     </div>
 
     <div class="container-fluid mb-4">
         <div class="row">
             <div class="col">
-                <a href="{{ url_for('update_entry', entry_id=entry.id) }}" class="btn rounded-pill btn-dark" role="button">Edit</a>
+                <a href="{{ url_for('update_entry', entry_id=entry.id) }}" class="btn rounded-pill btn-dark"
+                   role="button">Edit
+                </a>
             </div>
             <div class="col text-end">
-                <a href="{{ url_for('delete_entry', entry_id=entry.id) }}" class="btn rounded-pill btn-outline-danger" role="button">Delete</a>
+                <a href="{{ url_for('delete_entry', entry_id=entry.id) }}" class="btn rounded-pill btn-outline-danger"
+                   role="button">Delete
+                </a>
             </div>
         </div>
     </div>
@@ -38,10 +46,14 @@ Args:
     </div>
     <br>
 
-    <div class="mb-2">
-        Tags:&nbsp;
+    <div>
+        {% if entry.tags|length() != 0 %}
+            Tags:&nbsp;
+        {% endif %}
         {% for tag in entry.tags %}
-            <a href="{{ url_for('read_entries', tag_name=tag.name) }}">{{ tag.name }}</a>&nbsp;
+            <a class="btn btn-dark card-link rounded-pill tag" href="{{ url_for('read_entries', tag_name=tag.name) }}">
+                #{{ tag.name }}
+            </a>
         {% endfor %}
     </div>
 </div>

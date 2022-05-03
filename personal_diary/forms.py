@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from markupsafe import Markup
 from wtforms import StringField, SubmitField, PasswordField, SearchField, RadioField, SelectField
-from wtforms.validators import DataRequired, Length, EqualTo
+from wtforms.validators import DataRequired, Length, EqualTo, Optional
 from flask_ckeditor import CKEditorField
 
 
@@ -18,12 +18,15 @@ class CreateEntryForm(FlaskForm):
                          validators=[DataRequired(), Length(min=1, max=300)],
                          render_kw={'class': 'col-md-10', 'rows': '10'}
                          )
-    tag1 = StringField("Tag 1", render_kw={'class': 'col-md-1', 'placeholder': 'Tag 1'})
-    tag2 = StringField("Tag 2", render_kw={'class': 'col-md-1', 'placeholder': 'Tag 2'})
-    tag3 = StringField("Tag 3", render_kw={'class': 'col-md-1', 'placeholder': 'Tag 3'})
+    tag1 = StringField("Tag 1", validators=[Optional(), Length(min=1, max=20)],
+                       render_kw={'class': 'col-md-1', 'placeholder': 'Tag 1'})
+    tag2 = StringField("Tag 2", validators=[Optional(), Length(min=1, max=20)],
+                       render_kw={'class': 'col-md-1', 'placeholder': 'Tag 2'})
+    tag3 = StringField("Tag 3", validators=[Optional(), Length(min=1, max=20)],
+                       render_kw={'class': 'col-md-1', 'placeholder': 'Tag 3'})
     mood = RadioField('Mood', choices=[('&#128512', Markup('&#128512')), ('&#128525', Markup('&#128525')),
-                                       ('&#128532', Markup('&#128532')), ('&#128545', Markup('&#128545'))],
-                      default="&#128512")
+                                       ('&#128532', Markup('&#128532')),
+                                       ('&#128545', Markup('&#128545'))], default="&#128512")
     submit = SubmitField("Create Entry", render_kw={'class': 'rounded-pill btn btn-dark float-end ml-2'})
 
 
@@ -50,8 +53,8 @@ class UpdateEntryForm(FlaskForm):
                          )
 
     mood = RadioField('Mood', choices=[('&#128512', Markup('&#128512')), ('&#128525', Markup('&#128525')),
-                                       ('&#128532', Markup('&#128532')), ('&#128545', Markup('&#128545'))],
-                      default="&#128512")
+                                       ('&#128532', Markup('&#128532')),
+                                       ('&#128545', Markup('&#128545'))], default="&#128512")
 
     tag1 = StringField("Tag 1", render_kw={'class': 'col-md-2', 'placeholder': 'Tag 1'})
     tag2 = StringField("Tag 2", render_kw={'class': 'col-md-2', 'placeholder': 'Tag 2'})
