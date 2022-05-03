@@ -42,7 +42,9 @@ def create_app(db_name):
     def read_entries(tag_name: str):
         """
         Renders the page showing a list of the current entries or entries matching the user's search query.
-        If a tag is specified, the entries will be further filtered by the tag name
+        If a tag is specified, the entries will be further filtered by the tag name.
+        This route also takes in query arguments for the sort type and search query text, which is used to display
+        the proper sorting and search results.
 
         Args:
             tag_name: the name of a tag to filter entries by

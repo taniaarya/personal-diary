@@ -30,8 +30,8 @@ class ApplicationTestCaseEndToEnd(TestCase):
             entry_ids.append(create_entry_result["entry_id"])
             response_list.append(create_entry_result)
 
-        # test read all entries
-        read_all_entries_result = self.diary.read_all_entries("1", None)
+        # test read all entries with sort
+        read_all_entries_result = self.diary.read_all_entries("1", None, "created_desc")
         self.assertEqual(len(read_all_entries_result.keys()), 50)
 
         for entry_key, entry_val in read_all_entries_result.items():

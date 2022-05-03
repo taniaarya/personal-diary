@@ -2,7 +2,7 @@ import unittest
 from unittest import TestCase, mock
 from personal_diary import db
 from personal_diary.app import create_app
-from personal_diary.models import Entry, User
+from personal_diary.models import User
 from personal_diary.diary import Diary
 from werkzeug.security import generate_password_hash
 
@@ -79,7 +79,8 @@ class ApplicationTestReadEntryGET(TestCase):
     def setUp(self) -> None:
         self.client = set_up_flask_app_test_client()
         self.test_user = create_test_user()
-        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1"], "mood": "&#128512"}).get("entry_id")
+        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1"],
+                                            "mood": "&#128512"}).get("entry_id")
 
     def tearDown(self) -> None:
         tear_down_flask_test()
@@ -105,7 +106,8 @@ class ApplicationTestReadEntryGET(TestCase):
     @mock.patch('flask_login.utils._get_user')
     def test_get_entry_from_different_user_returns_404(self, current_user):
         current_user.return_value = self.test_user
-        diff_entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "2", "tags": ["tag1"], "mood": "&#128512"})["entry_id"]
+        diff_entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "2", "tags": ["tag1"],
+                                            "mood": "&#128512"})["entry_id"]
         response = self.client.get(f'/entry/{diff_entry_id}')
         self.assertEqual(response.status_code, 404)
 
@@ -167,7 +169,8 @@ class ApplicationTestUpdateEntryGET(TestCase):
     def setUp(self) -> None:
         self.client = set_up_flask_app_test_client()
         self.test_user = create_test_user()
-        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1"], "mood": "&#128512"}).get("entry_id")
+        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1"],
+                                            "mood": "&#128512"}).get("entry_id")
 
     def tearDown(self) -> None:
         tear_down_flask_test()
@@ -175,14 +178,16 @@ class ApplicationTestUpdateEntryGET(TestCase):
     @mock.patch('flask_login.utils._get_user')
     def test_update_can_send_json(self, current_user):
         current_user.return_value = self.test_user
-        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id, "tags": ["tag1"], "mood": "&#128512"}
+        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id, "tags": ["tag1"],
+                              "mood": "&#128512"}
         response = self.client.get("/edit/{}".format(self.entry_id), json=valid_request_json)
         self.assertTrue(response is not None)
 
     @mock.patch('flask_login.utils._get_user')
     def test_update_valid_json_returns_success_response(self, current_user):
         current_user.return_value = self.test_user
-        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id, "tags": ["tag1"], "mood":"&#128512"}
+        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id, "tags": ["tag1"],
+                              "mood": "&#128512"}
         response = self.client.get("/edit/{}".format(self.entry_id), json=valid_request_json)
         self.assertEqual(response.status_code, 200)
 
@@ -201,7 +206,8 @@ class ApplicationTestUpdateEntryGET(TestCase):
     @mock.patch('flask_login.utils._get_user')
     def test_get_entry_from_not_current_user_returns_404(self, current_user):
         current_user.return_value = self.test_user
-        diff_entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "2", "tags": ["tag1"], "mood": "&#128512"})["entry_id"]
+        diff_entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "2", "tags": ["tag1"],
+                                            "mood": "&#128512"})["entry_id"]
         response = self.client.get(f'/edit/{diff_entry_id}')
         self.assertEqual(response.status_code, 404)
 
@@ -209,7 +215,8 @@ class ApplicationTestUpdateEntryGET(TestCase):
 class ApplicationTestUpdateEntryPOST(TestCase):
     def setUp(self) -> None:
         self.client = set_up_flask_app_test_client()
-        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1"], "mood": "&#128512"}).get("entry_id")
+        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1"],
+                                            "mood": "&#128512"}).get("entry_id")
         self.test_user = create_test_user()
 
     def tearDown(self) -> None:
@@ -218,7 +225,8 @@ class ApplicationTestUpdateEntryPOST(TestCase):
     @mock.patch('flask_login.utils._get_user')
     def test_update_can_send_json(self, current_user):
         current_user.return_value = self.test_user
-        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id, "tags": ["tag1"], "mood":"&#128512"}
+        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id, "tags": ["tag1"],
+                              "mood": "&#128512"}
         response = self.client.post("/edit/{}".format(self.entry_id), json=valid_request_json)
         self.assertTrue(response is not None)
 
@@ -250,7 +258,8 @@ class ApplicationTestDeleteEntryGET(TestCase):
     def setUp(self) -> None:
         self.client = set_up_flask_app_test_client()
         self.test_user = create_test_user()
-        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1"], "mood": "&#128512"}).get("entry_id")
+        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1"],
+                                            "mood": "&#128512"}).get("entry_id")
 
     def tearDown(self) -> None:
         tear_down_flask_test()
@@ -258,7 +267,7 @@ class ApplicationTestDeleteEntryGET(TestCase):
     @mock.patch('flask_login.utils._get_user')
     def test_delete_can_send_json(self, current_user):
         current_user.return_value = self.test_user
-        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id, "mood":"&#128512"}
+        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id, "mood": "&#128512"}
         response = self.client.get("/delete/{}".format(self.entry_id), json=valid_request_json)
         self.assertTrue(response is not None)
 
@@ -278,7 +287,8 @@ class ApplicationTestDeleteEntryGET(TestCase):
     @mock.patch('flask_login.utils._get_user')
     def test_delete_entry_from_not_current_user_returns_404(self, current_user):
         current_user.return_value = self.test_user
-        diff_entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "2", "tags": ["tag1"],"mood": "&#128512"})["entry_id"]
+        diff_entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "2", "tags": ["tag1"],
+                                            "mood": "&#128512"})["entry_id"]
         response = self.client.get(f'/delete/{diff_entry_id}')
         self.assertEqual(response.status_code, 404)
 
