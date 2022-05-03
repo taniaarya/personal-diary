@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 <!--
 Displays a page showing the title, body text, and date created for an entry. It also contains buttons to
 edit or delete an entry.
@@ -10,18 +9,33 @@ Args:
 
 {% block content %}
 
-<h2 class="title">{{entry.title}} </h2>
+<h2 style="width: 800px; overflow-wrap: break-word" class="title">{{entry.title}} </h2>
 <p> {{entry.mood|safe}} </p>
 <div style="width: 800px">
-    <p style="font-size: 16px" class="mb-4">Created: {{entry.created.replace(microsecond=0)}}</p>
+    <div>
+        <p style="font-size: 16px" class="mb-4 text-secondary">Created: {{datetime_string}}</p>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <a href="{{ url_for('delete_entry', entry_id=entry.id) }}" class="btn rounded-pill btn-danger" role="button">Delete</a>
+            </div>
+            <div class="col text-end">
+                <a href="{{ url_for('update_entry', entry_id=entry.id) }}" class="btn rounded-pill btn-outline-secondary" role="button">Edit</a>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <br>
+
     <div class="card">
         <div class="card-body">
             {{entry.body|safe}}
         </div>
     </div>
     <br>
-    <a href="{{ url_for('delete_entry', entry_id=entry.id) }}" class="btn btn-danger" role="button">Delete</a>
-    <a href="{{ url_for('update_entry', entry_id=entry.id) }}" class="btn btn-primary" role="button">Edit</a>
 
     <div>
         Tags:&nbsp;

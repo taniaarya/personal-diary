@@ -38,7 +38,7 @@ class Entry(UserMixin, db.Model):
 
 
 def __repr__(self):
-        return '<Entry {}>'.format(self.id)
+    return '<Entry {}>'.format(self.id)
 
 
 class User(UserMixin, db.Model):
