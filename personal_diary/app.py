@@ -133,6 +133,7 @@ def create_app(db_name):
 
         update_form.title.data = entry.title
         update_form.body.data = entry.body
+        update_form.mood.data = entry.mood
         update_form.tag1.data = entry.tags[0].name if len(entry.tags) >= 1 else ""
         update_form.tag2.data = entry.tags[1].name if len(entry.tags) >= 2 else ""
         update_form.tag3.data = entry.tags[2].name if len(entry.tags) >= 3 else ""
