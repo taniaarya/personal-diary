@@ -178,7 +178,7 @@ class Diary:
             or date created time, ascending or descending.
 
         Returns:
-            a collection of sorted entries that can be iterated over
+            an iterable collection of sorted entries
         """
         if sort_type == "created_asc":
             return entries.order_by(asc(Entry.created))

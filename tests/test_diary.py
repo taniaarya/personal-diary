@@ -12,7 +12,8 @@ app.app_context().push()
 class DiaryTestCreateEntry(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.valid_request = {"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1", "tag2", "tag3"], "mood": "128512"}
+        self.valid_request = {"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1", "tag2", "tag3"],
+                              "mood": "128512"}
 
     def tearDown(self) -> None:
         db.drop_all()
@@ -97,7 +98,8 @@ class DiaryTestReadSingleEntry(unittest.TestCase):
 
     def setUp(self) -> None:
         for entry_id in range(5):
-            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1", mood="&#128512")
+            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1",
+                               mood="&#128512")
             db.session.add(test_entry)
         db.session.commit()
 
@@ -128,7 +130,8 @@ class DiaryTestReadAllEntries(unittest.TestCase):
     @staticmethod
     def populate_multiple_entries():
         for entry_id in range(5):
-            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1", mood="&#128512")
+            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1",
+                               mood="&#128512")
             db.session.add(test_entry)
         db.session.commit()
 
@@ -169,7 +172,8 @@ class DiaryTestUpdateEntry(unittest.TestCase):
 
     def setUp(self) -> None:
         for entry_id in range(5):
-            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1", mood="&#128512")
+            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1",
+                               mood="&#128512")
             db.session.add(test_entry)
         db.session.commit()
 
@@ -179,7 +183,8 @@ class DiaryTestUpdateEntry(unittest.TestCase):
         db.session.commit()
 
     def test_single_update_with_new_body_valid_entry_id_and_title_returns_updated_entry(self):
-        Diary.update_entry({"entry_id": "1", "title": "value2", "body": "Hello Human!", "tags": ["tag1"], "mood":"&#128512"})
+        Diary.update_entry({"entry_id": "1", "title": "value2", "body": "Hello Human!", "tags": ["tag1"],
+                            "mood": "&#128512"})
         updated_entry = Entry.query.get("1")
         self.assertEqual(updated_entry.title, "value2")
         self.assertEqual(updated_entry.body, "Hello Human!")
@@ -188,7 +193,8 @@ class DiaryTestUpdateEntry(unittest.TestCase):
         for idx in range(10):
             new_title = "value" + str(idx)
             new_body = "Hello Human!" + str(idx)
-            Diary.update_entry({"entry_id": "1", "title": new_title, "body": new_body, "tags": ["tag1"], "mood": "&#128512"})
+            Diary.update_entry({"entry_id": "1", "title": new_title, "body": new_body, "tags": ["tag1"],
+                                "mood": "&#128512"})
             updated_entry = Entry.query.get("1")
             self.assertEqual(updated_entry.title, new_title)
             self.assertEqual(updated_entry.body, new_body)
@@ -197,7 +203,8 @@ class DiaryTestUpdateEntry(unittest.TestCase):
         for entry_id in range(5):
             new_title = "value" + str(entry_id)
             new_body = "Hello Human!" + str(entry_id)
-            Diary.update_entry({"entry_id": str(entry_id), "title": new_title, "body": new_body, "tags": ["tag1"], "mood": "&#128512"})
+            Diary.update_entry({"entry_id": str(entry_id), "title": new_title, "body": new_body, "tags": ["tag1"],
+                                "mood": "&#128512"})
             updated_entry = Entry.query.get(str(entry_id))
             self.assertEqual(updated_entry.title, new_title)
             self.assertEqual(updated_entry.body, new_body)
@@ -212,7 +219,8 @@ class DiaryTestDeleteEntry(unittest.TestCase):
     @staticmethod
     def populate_multiple_entries():
         for entry_id in range(5):
-            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1", mood="&#128512")
+            test_entry = Entry(id=str(entry_id), title="Title", body="Body", created=datetime.now(), user_id="1",
+                               mood="&#128512")
             db.session.add(test_entry)
         db.session.commit()
 
@@ -247,8 +255,10 @@ class DiaryTestSearchEntries(unittest.TestCase):
     def populate_multiple_entries():
         entry_list = [
             Entry(id="1", title="New Title", body="Hello World", created=datetime.now(), user_id="1", mood="&#128512"),
-            Entry(id="2", title="A new day", body="class was so good", created=datetime.now(), user_id="1", mood="&#128512"),
-            Entry(id="3", title="A long Day", body="Today was monday", created=datetime.now(), user_id="1", mood="&#128512")
+            Entry(id="2", title="A new day", body="class was so good", created=datetime.now(), user_id="1",
+                  mood="&#128512"),
+            Entry(id="3", title="A long Day", body="Today was monday", created=datetime.now(), user_id="1",
+                  mood="&#128512")
         ]
         for test_entry in entry_list:
             db.session.add(test_entry)
@@ -277,6 +287,77 @@ class DiaryTestSearchEntries(unittest.TestCase):
         self.assertEqual(set(Diary.search_entries("day", "1", None).keys()), {"2", "3"})
 
         self.assertEqual(set(Diary.search_entries("good", "1", None).keys()), {"2"})
+
+
+class DiaryTestSortEntries(unittest.TestCase):
+
+    def tearDown(self) -> None:
+        db.session.query(Entry).delete()
+        db.session.commit()
+
+    @staticmethod
+    def populate_multiple_entries():
+        entry_list = [
+            Entry(id="1", title="New Title", body=" ", created=datetime(1, 1, 1), modified=datetime(1, 1, 1),
+                  user_id="1", mood="&#128512"),
+            Entry(id="2", title="A new day", body=" ", created=datetime(2, 2, 2), modified=datetime(3, 3, 3),
+                  user_id="1", mood="&#128512"),
+            Entry(id="3", title="A long Day", body=" ", created=datetime(3, 3, 3), modified=datetime(4, 4, 4),
+                  user_id="1", mood="&#128512")
+        ]
+        for test_entry in entry_list:
+            db.session.add(test_entry)
+        db.session.commit()
+
+    def test_sort_no_entries_returns_empty(self):
+        test_entries = Entry.query.filter_by(user_id="1")
+
+        sorted_entries = Diary.sort_entries(test_entries, "created_desc")
+        self.assertEqual(sum(1 for _ in sorted_entries), 0)
+
+    def test_sort_created_desc_returns_correct(self):
+        DiaryTestSortEntries.populate_multiple_entries()
+        test_entries = Entry.query.filter_by(user_id="1")
+
+        sorted_entries = Diary.sort_entries(test_entries, "created_desc")
+
+        entry_id = 3
+        for entry in sorted_entries:
+            self.assertEqual(int(entry.id), entry_id)
+            entry_id = entry_id - 1
+
+    def test_sort_created_asc_returns_correct(self):
+        DiaryTestSortEntries.populate_multiple_entries()
+        test_entries = Entry.query.filter_by(user_id="1")
+
+        sorted_entries = Diary.sort_entries(test_entries, "created_asc")
+
+        entry_id = 1
+        for entry in sorted_entries:
+            self.assertEqual(int(entry.id), entry_id)
+            entry_id = entry_id + 1
+
+    def test_sort_modified_desc_returns_correct(self):
+        DiaryTestSortEntries.populate_multiple_entries()
+        test_entries = Entry.query.filter_by(user_id="1")
+
+        sorted_entries = Diary.sort_entries(test_entries, "modified_desc")
+
+        entry_id = 3
+        for entry in sorted_entries:
+            self.assertEqual(int(entry.id), entry_id)
+            entry_id = entry_id - 1
+
+    def test_sort_modified_asc_returns_correct(self):
+        DiaryTestSortEntries.populate_multiple_entries()
+        test_entries = Entry.query.filter_by(user_id="1")
+
+        sorted_entries = Diary.sort_entries(test_entries, "modified_asc")
+
+        entry_id = 1
+        for entry in sorted_entries:
+            self.assertEqual(int(entry.id), entry_id)
+            entry_id = entry_id + 1
 
 
 if __name__ == '__main__':
