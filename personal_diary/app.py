@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 from flask import Flask, Markup, render_template, url_for, redirect, flash, abort, request
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
@@ -75,10 +76,11 @@ def create_app(db_name):
             "user_id": current_user.id
         }
         entry = Diary.read_single_entry(read_request)["entry"]
+        datetime_string = datetime.strftime(entry.created, '%m/%d/%Y %H:%M %p')
         if entry.user_id != current_user.id:
             abort(404)
 
-        return render_template("read_single_entry.html", entry=entry)
+        return render_template("read_single_entry.html", entry=entry, datetime_string=datetime_string)
 
     @flask_app.route("/create", methods=['GET', 'POST'])
     @login_required
