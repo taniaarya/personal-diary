@@ -465,5 +465,28 @@ class ApplicationTestDeleteUserGET(TestCase):
         self.assertEqual(response.request.path, "/login")
 
 
+class ApplicationTestLogoutUserGET(TestCase):
+
+    def setUp(self) -> None:
+        self.client = set_up_flask_app_test_client()
+        self.test_user = create_test_user()
+
+    def tearDown(self) -> None:
+        tear_down_flask_test()
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_delete_can_send_json(self, current_user):
+        current_user.return_value = self.test_user
+        response = self.client.get("/logout")
+        self.assertTrue(response is not None)
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_get_delete_redirects_to_login_page(self, current_user):
+        current_user.return_value = self.test_user
+        response = self.client.get("/logout", follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.request.path, "/login")
+
+
 if __name__ == '__main__':
     unittest.main()

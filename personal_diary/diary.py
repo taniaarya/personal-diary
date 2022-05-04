@@ -84,9 +84,8 @@ class Diary:
         all_entries = Entry.query.filter_by(user_id=user_id)
         if tag_name:
             all_entries = all_entries.join(Entry.tags).filter(Tag.name == tag_name).all()
-        all_entries = Diary.sort_entries(all_entries, sort_by)
-        entry_dict = {}
 
+        entry_dict = {}
         for entry in all_entries:
             entry_dict[entry.id] = entry
 

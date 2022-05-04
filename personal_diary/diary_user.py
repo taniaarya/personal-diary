@@ -28,14 +28,6 @@ class DiaryUser:
         return {"user_id": new_user_id}
 
     @staticmethod
-    def read_user():
-        pass
-
-    @staticmethod
-    def update_user():
-        pass
-
-    @staticmethod
     def delete_user(request: dict) -> dict:
         """
         Deletes a user from the database
