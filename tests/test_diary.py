@@ -141,12 +141,26 @@ class DiaryTestReadAllEntries(unittest.TestCase):
         db.session.add(test_entry)
         db.session.commit()
 
+    @staticmethod
+    def populate_single_entry_with_tag():
+        test_entry = Entry(id="1", title="Title", body="Body", created=datetime.now(), user_id="1", mood="&#128512")
+        test_entry.tags.append(Tag(name="test"))
+        db.session.add(test_entry)
+        db.session.commit()
+
     def test_read_empty_dictionary_returns_empty(self):
         self.assertEqual(Diary.read_all_entries("1", None), {})
 
     def test_read_populated_db_one_key_returns_correct_dict(self):
         DiaryTestReadAllEntries.populate_single_entry()
         entries = Diary.read_all_entries("1", None)
+        self.assertEqual(entries["1"].title, "Title")
+        self.assertEqual(entries["1"].body, "Body")
+        self.assertEqual(len(entries), 1)
+
+    def test_read_populated_db_with_tag_returns_correct_dict(self):
+        DiaryTestReadAllEntries.populate_single_entry_with_tag()
+        entries = Diary.read_all_entries("1", tag_name="test")
         self.assertEqual(entries["1"].title, "Title")
         self.assertEqual(entries["1"].body, "Body")
         self.assertEqual(len(entries), 1)
@@ -266,6 +280,9 @@ class DiaryTestSearchEntries(unittest.TestCase):
 
     def test_search_empty_dictionary_returns_empty(self):
         self.assertEqual(Diary.search_entries("hello", "1", None), {})
+
+    def test_search_empty_query_returns_empty(self):
+        self.assertEqual(Diary.search_entries(None, "1", None), {})
 
     def test_search_multiple_keyword_query_returns_correct_entries(self):
         DiaryTestSearchEntries.populate_multiple_entries()

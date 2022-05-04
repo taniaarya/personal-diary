@@ -18,9 +18,6 @@ class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
 
-    def __repr__(self):
-        return '<Tag {}>'.format(self.id)
-
 
 class Entry(UserMixin, db.Model):
     """Data model for diary entries"""
@@ -37,10 +34,6 @@ class Entry(UserMixin, db.Model):
     mood = db.Column(db.Text, unique=False, nullable=False)
 
 
-def __repr__(self):
-    return '<Entry {}>'.format(self.id)
-
-
 class User(UserMixin, db.Model):
     """Data model for users"""
 
@@ -51,6 +44,3 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(30))
     password = db.Column(db.String(15))
     entries = db.relationship('Entry', backref='Users', lazy=True, cascade="all, delete-orphan")
-
-    def __repr__(self):
-        return '<User {}>'.format(self.id)
