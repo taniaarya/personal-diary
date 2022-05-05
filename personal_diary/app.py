@@ -53,6 +53,10 @@ def create_app(db_name):
         sort_type = request.args.get('sort_type', default="created_desc")
         search_query = request.args.get('search', default="")
 
+        if not Diary.check_entry_for_today(user_id=current_user.id):
+            flash(Markup('You have no entry for today. <a href="/create" class="alert-link"> Create</a>'
+                         ' a new entry to reflect on your day!'), 'alert-warning')
+
         return render_template("index.html",
                                entries=Diary.search_entries(search_query, current_user.id, tag_name, sort_type),
                                form=SearchEntryForm(),
@@ -232,7 +236,6 @@ def create_app(db_name):
         DiaryUser.delete_user({"user": current_user})
         flash("User account deleted!", "alert-success")
         return redirect(url_for("login"))
-    
     return flask_app
 
 

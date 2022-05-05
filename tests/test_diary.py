@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 from personal_diary.diary import Diary
 from personal_diary.app import create_app
 from personal_diary.models import Entry, Tag
@@ -375,6 +375,44 @@ class DiaryTestSortEntries(unittest.TestCase):
         for entry in sorted_entries:
             self.assertEqual(int(entry.id), entry_id)
             entry_id = entry_id + 1
+
+
+class DiaryTestCheckEntryForToday(unittest.TestCase):
+
+    def tearDown(self) -> None:
+        db.session.query(Entry).delete()
+        db.session.commit()
+
+    @staticmethod
+    def populate_multiple_entries():
+        entry_list = [
+            Entry(id="1", title="New Title", body="Hello World", created=datetime.now() - timedelta(3),
+                  user_id="1", mood="&#128512"),
+            Entry(id="2", title="A new day", body="class was so good", created=datetime.now() - timedelta(8),
+                  user_id="1", mood="&#128512"),
+            Entry(id="3", title="A long Day", body="Today was monday", created=datetime.now() - timedelta(4),
+                  user_id="1", mood="&#128512")
+        ]
+        for test_entry in entry_list:
+            db.session.add(test_entry)
+        db.session.commit()
+
+    @staticmethod
+    def add_entry_for_today():
+        db.session.add(Entry(id="4", title="New Title", body="Hello World", created=datetime.now(),
+                                user_id="1", mood="&#128512"))
+
+    def test_empty_dictionary_returns_false(self):
+        self.assertEqual(Diary.check_entry_for_today(user_id="1"), False)
+
+    def test_multiple_entries_none_today_returns_false(self):
+        DiaryTestCheckEntryForToday.populate_multiple_entries()
+        self.assertEqual(Diary.check_entry_for_today(user_id="1"), False)
+
+    def test_multiple_entries_entry_today_returns_true(self):
+        DiaryTestSearchEntries.populate_multiple_entries()
+        DiaryTestCheckEntryForToday.add_entry_for_today()
+        self.assertEqual(Diary.check_entry_for_today(user_id="1"), True)
 
 
 if __name__ == '__main__':
