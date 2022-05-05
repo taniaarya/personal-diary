@@ -187,3 +187,22 @@ class Diary:
             return entries.order_by(desc(Entry.modified))
         else:
             return entries.order_by(desc(Entry.created))
+
+    @staticmethod
+    def check_entry_for_today(user_id: str) -> bool:
+        """
+        Searches the collection of entries for a user to see if the user has made an entry for the day.
+
+        Args:
+            user_id: string representing the id of the user the entry belongs to
+
+        Returns:
+            a boolean which represents whether the user has made an entry for the day
+        """
+        today = datetime.today()
+        user_entries = Entry.query.filter_by(user_id=user_id)
+        for entry in user_entries:
+            if entry.created.strftime("%d/%m/%Y") == today.strftime("%d/%m/%Y"):
+                return True
+        return False
+
