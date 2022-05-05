@@ -40,7 +40,7 @@ The base HTML template file that the other pages extend from. It includes a navi
                     </li>
                     {% endif %}
                     {% if current_user.is_authenticated %}
-                    <div class="dropdown nav-item me-5">
+                    <div class="dropdown nav-item me-3">
                       <a class="btn btn-outline-light dropdown-toggle" href="{{ url_for('logout') }}" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                         Account Actions
                       </a>
