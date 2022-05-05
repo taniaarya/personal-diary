@@ -34,8 +34,8 @@ class SearchEntryForm(FlaskForm):
     """
     Search field to allow user to input keywords used to filter entries.
     """
-    search = SearchField('')
-    submit = SubmitField("Search")
+    search = SearchField('', render_kw={'class': 'w-50 search-btn me-2', 'placeholder': 'Search for an entry...'})
+    submit = SubmitField("Search", render_kw={'class': 'btn btn-dark rounded-pill'})
 
 
 class UpdateEntryForm(FlaskForm):
@@ -72,12 +72,15 @@ class SignupForm(FlaskForm):
     """
     username = StringField('Username',
                            validators=[DataRequired(), Length(min=1, max=15)],
+                           render_kw={'class': 'text-start', 'size': "30"}
                            )
     full_name = StringField('Full Name',
                             validators=[DataRequired(), Length(min=1, max=30)],
+                            render_kw={'class': 'text-start', 'size': "30"}
                             )
     password = PasswordField('Password (8-15 Characters)',
-                             validators=[DataRequired(), Length(min=8, max=15)]
+                             validators=[DataRequired(), Length(min=8, max=15)],
+                             render_kw={'class': 'text-start', 'size': "30"}
                              )
     # Verify that passwords match
     confirm_password = PasswordField('Confirm Password',
@@ -85,9 +88,10 @@ class SignupForm(FlaskForm):
                                          DataRequired(),
                                          Length(min=8, max=15),
                                          EqualTo("password", message="Passwords must match!")
-                                     ]
+                                     ],
+                                     render_kw={'class': 'text-start', 'size': "30"}
                                      )
-    submit = SubmitField("Sign Up")
+    submit = SubmitField("Sign Up", render_kw={'class': 'rounded-pill btn btn-dark mt-3 login-btn mx-auto text-center'})
 
 
 class LoginForm(FlaskForm):
@@ -97,8 +101,10 @@ class LoginForm(FlaskForm):
     """
     username = StringField('Username',
                            validators=[DataRequired(), Length(min=1, max=15)],
+                           render_kw={'class': 'text-start', 'size': "30"}
                            )
     password = PasswordField('Password',
-                             validators=[DataRequired()]
+                             validators=[DataRequired()],
+                             render_kw={'class': 'text-start', 'size': "30"}
                              )
-    login = SubmitField("Login")
+    login = SubmitField("Login", render_kw={'class': 'rounded-pill btn btn-dark mt-3 login-btn mx-auto text-center'})

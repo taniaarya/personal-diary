@@ -9,42 +9,53 @@ Args:
 
 {% block content %}
 
-    <div class="form-wrapper">
-        <h2 class="title">Login</h2>
+    <div class="form-wrapper mx-auto mt-5">
+        <div class="container d-flex flex-wrap justify-content-center py-3 border" style="width: 350px;">
+            <div class="w-100">
+                <h2 class="title text-center mb-4">Login</h2>
+            </div>
 
-        <form method="POST" action="{{ url_for('login') }}">
+            <form method="POST" action="{{ url_for('login') }}" class="mx-auto">
 
-            {{ form.csrf_token }}
+                {{ form.csrf_token }}
 
-            <fieldset class="form-field">
-                {{ form.username.label }}<br>
-                {{ form.username }}
-                {% if form.username.errors %}
-                    <ul class="errors">
-                        {% for error in form.username.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </fieldset>
+                <fieldset class="form-field">
+                    <div class="mb-2">
+                        <p class="mb-1">{{ form.username.label }}</p>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <ul class="errors">
+                                {% for error in form.username.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </fieldset>
 
-            <fieldset class="form-field">
-                {{ form.password.label }}<br>
-                {{ form.password }}
-                {% if form.password.errors %}
-                    <ul class="errors">
-                        {% for error in form.password.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </fieldset>
+                <fieldset class="form-field">
+                    <div class="mb-2">
+                        <p class="mb-1">{{ form.password.label }}</p>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <ul class="errors">
+                                {% for error in form.password.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </fieldset>
 
-            {{ form.login }}
+                <div class="d-flex justify-content-center mx-auto mb-2">
+                    {{ form.login }}
+                </div>
+            </form>
+        </div>
+        <a href="{{ url_for('signup') }}"
+           class="btn btn-outline-dark mt-5 rounded-pill login-btn d-block mx-auto"
+           role="button">Create a New Account</a>
 
-        </form>
-
-        <a href="{{ url_for('signup') }}" class="btn btn-primary mt-5" role="button">Create an Account Here</a>
     </div>
 
 {% endblock %}
