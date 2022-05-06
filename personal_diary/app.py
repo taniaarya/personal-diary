@@ -1,7 +1,10 @@
-from datetime import datetime
 import os
+from typing import Union
+
 from flask import Flask, Markup, render_template, url_for, redirect, flash, abort, request
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
+from werkzeug import Response
+
 from personal_diary.diary import Diary
 from personal_diary import db
 from personal_diary.forms import CreateEntryForm, UpdateEntryForm, SignupForm, SearchEntryForm, LoginForm
@@ -11,9 +14,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_ckeditor import CKEditor
 
 
-def create_app(db_name):
+def create_app(db_name) -> Flask:
     """
     Creates the Flask application by setting up the database connection, user management, and page routes.
+
+    Returns:
+        app: Flask application to access the diary functions
     """
 
     flask_app = Flask(__name__)
@@ -30,7 +36,13 @@ def create_app(db_name):
     login_manager.init_app(flask_app)
 
     @login_manager.user_loader
-    def load_user(user_id: str):
+    def load_user(user_id: str) -> str:
+        """
+        Determines what the currently logged-in user is.
+
+        Returns:
+            user_id: the id of the currently logged-in user
+        """
         return User.query.get(user_id)
 
     db.init_app(flask_app)
@@ -40,15 +52,18 @@ def create_app(db_name):
     @flask_app.route("/", methods=['GET'], defaults={'tag_name': None})
     @flask_app.route("/<tag_name>", methods=['GET', 'POST'])
     @login_required
-    def read_entries(tag_name: str):
+    def read_entries(tag_name: str) -> str:
         """
-        Renders the page showing a list of the current entries or entries matching the user's search query.
+        Renders the home page, which shows a list of the current entries or entries matching the user's search query.
+        These entries can be sorted based on date.
         If a tag is specified, the entries will be further filtered by the tag name.
-        This route also takes in query arguments for the sort type and search query text, which is used to display
-        the proper sorting and search results.
+        The page also displays a reminder if no entry has been made for the current day.
 
         Args:
             tag_name: the name of a tag to filter entries by
+
+        Returns:
+            response: the HTML to display the home page showing the list of entries
         """
         sort_type = request.args.get('sort_type', default="created_desc")
         search_query = request.args.get('search', default="")
@@ -66,12 +81,16 @@ def create_app(db_name):
 
     @flask_app.route("/entry/<entry_id>", methods=['GET'])
     @login_required
-    def read_single_entry(entry_id: str):
+    def read_single_entry(entry_id: str) -> str:
         """
-        Renders the page showing the title and body for a diary entry.
+        Renders the page showing the contents for a diary entry. This includes the title, body text, date modified,
+        date created, selected mood, and any tags that were added.
 
         Args:
             entry_id: the id of the entry to display
+
+        Returns:
+            response: the HTML to display the page with the entry's contents
         """
         read_request = {
             "entry_id": entry_id,
@@ -86,9 +105,15 @@ def create_app(db_name):
 
     @flask_app.route("/create", methods=['GET', 'POST'])
     @login_required
-    def create_entry():
+    def create_entry() -> Union[Response, str]:
         """
-        Renders the page with a form for users to input the title and body for an entry.
+        Renders the page with a form for users to create an entry. This form allows users to input the title,
+        body text, select a mood rating, and add tags. After creating the entry,
+        it redirects back to the page to view that specific entry.
+
+        Returns:
+            response: the HTML for the page with the form or the redirect to the read_single_entry page upon
+            submission of the form
         """
         create_form = CreateEntryForm()
         if create_form.validate_on_submit():
@@ -101,6 +126,7 @@ def create_app(db_name):
                 "user_id": current_user.id,
                 "mood": create_form.mood.data
             }
+
             Diary.create_entry(create_request)
             flash("Entry created!", "alert-success")
             return redirect(url_for("read_entries"))
@@ -109,13 +135,17 @@ def create_app(db_name):
 
     @flask_app.route("/edit/<entry_id>", methods=["GET", "POST"])
     @login_required
-    def update_entry(entry_id: str):
+    def update_entry(entry_id: str) -> Union[Response, str]:
         """
-        Renders the page with fields for a user to update the title and body text of an entry. After updating
-        the entry, it redirects back to the home page showing the list of existing entries.
+        Renders the page with fields for a user to update the contents of an entry. This includes the title, body text,
+        mood rating, or tags. After updating the entry, it redirects back to page to view that specific entry.
 
         Args:
             entry_id: the id of the entry to display and update
+
+        Returns:
+            response: the HTML for the page with the fields or the redirect to the read_single_entry page upon
+            submission of the form
         """
         entry = Entry.query.get_or_404(entry_id)
         if entry.user_id != current_user.id:
@@ -133,6 +163,7 @@ def create_app(db_name):
                 "user_id": current_user.id,
                 "mood": update_form.mood.data
             }
+
             Diary.update_entry(update_request)
             flash("Entry updated!", "alert-success")
             return redirect(url_for("read_single_entry", entry_id=entry.id))
@@ -148,13 +179,16 @@ def create_app(db_name):
 
     @flask_app.route("/delete/<entry_id>", methods=['GET'])
     @login_required
-    def delete_entry(entry_id: str):
+    def delete_entry(entry_id: str) -> Response:
         """
         Deletes the entry with the given entry_id. It redirects back to the
         home screen showing the list of existing entries.
 
         Args:
             entry_id: the id of the entry to delete
+
+        Returns:
+            response: the redirect back to the home page
         """
         entry = Entry.query.get_or_404(entry_id)
         if entry.user_id != current_user.id:
@@ -165,11 +199,14 @@ def create_app(db_name):
         return redirect(url_for("read_entries"))
 
     @flask_app.route("/signup", methods=["GET", "POST"])
-    def signup():
+    def signup() -> Union[Response, str]:
         """
         Renders signup form allowing user to enter their username, full name, and password.
-        If the username already exists, the user will be prompted to sign up again, otherwise
+        If the username already exists, the user will be prompted to sign up again. Otherwise,
         they will be redirected to the login page with the new credentials.
+
+        Returns:
+            response: the HTML for the signup page or the redirect to the login page
         """
         signup_form = SignupForm()
         if signup_form.validate_on_submit():
@@ -191,12 +228,15 @@ def create_app(db_name):
         return render_template("signup.html", form=signup_form)
 
     @flask_app.route("/login", methods=["GET", "POST"])
-    def login():
+    def login() -> Union[Response, str]:
         """
         Renders login form allowing user to access their account and diary.
         If the username does not exist or the password does not match the record for the username,
-        the user will be prompted to try again or create an account, otherwise
-        they will be redirected to the home page for their account.
+        the user will be prompted to try again or create an account. Otherwise, they will be redirected to the home
+        page for their account.
+
+        Returns:
+            response: the HTML for the page with the login form or the redirect to the home page
         """
         login_form = LoginForm()
         if login_form.validate_on_submit():
@@ -223,19 +263,29 @@ def create_app(db_name):
 
     @flask_app.route('/logout')
     @login_required
-    def logout():
+    def logout() -> Response:
+        """
+        Logs out the currently logged-in user and redirects back to the login page.
+
+        Returns:
+            response: the redirect back to the login page
+        """
         logout_user()
         return redirect(url_for('login'))
 
     @flask_app.route("/delete-user", methods=['GET'])
     @login_required
-    def delete_user():
+    def delete_user() -> Response:
         """
         Deletes the user with the given user_id. It redirects back to the login screen after completion.
+
+        Returns:
+            response: the redirect back to the login page
         """
         DiaryUser.delete_user({"user": current_user})
         flash("User account deleted!", "alert-success")
         return redirect(url_for("login"))
+
     return flask_app
 
 
