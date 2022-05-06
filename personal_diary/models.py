@@ -2,7 +2,7 @@ from personal_diary import db
 from flask_login import UserMixin
 
 """
-Association table for entries and tags, as describe by Flask-SQLAlchemy documentation
+Association table for entries and tags, as described by Flask-SQLAlchemy documentation
 """
 tags = db.Table('tags',
                 db.Column('tag_id', db.Integer, db.ForeignKey('EntryTags.id'), primary_key=True),
@@ -11,7 +11,12 @@ tags = db.Table('tags',
 
 
 class Tag(db.Model):
-    """Data model for diary entry tags"""
+    """
+    Defines the data model for diary entry tags. Tags can contain an id and name.
+
+    Inherits:
+        db.Model: base class from SQLAlchemy to define a model
+    """
 
     __tablename__ = 'EntryTags'
 
@@ -20,7 +25,14 @@ class Tag(db.Model):
 
 
 class Entry(UserMixin, db.Model):
-    """Data model for diary entries"""
+    """
+    Defines the data model for diary entries. Each entry can contain an id for the entry, title, body,
+    created datetime, modified datetime, tags, user_id, and mood.
+
+    Inherits:
+        UserMixin: base class from Flask to be able to check whether an entry matches the logged-in user
+        db.Model: base class from SQLAlchemy to define a model
+    """
 
     __tablename__ = 'DiaryEntries'
 
@@ -35,7 +47,13 @@ class Entry(UserMixin, db.Model):
 
 
 class User(UserMixin, db.Model):
-    """Data model for users"""
+    """
+    Defines the data model for users. Users can contain an id, username, name, password, and associated entries.
+
+    Inherits:
+        UserMixin: base class from Flask to be able to check whether the user matches the logged-in user
+        db.Model: base class from SQLAlchemy to define a model
+    """
 
     __tablename__ = 'Users'
 

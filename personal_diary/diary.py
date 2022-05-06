@@ -70,14 +70,13 @@ class Diary:
         return {"entry": entry}
 
     @staticmethod
-    def read_all_entries(user_id: str, tag_name: str, sort_by: str = "created_desc") -> dict:
+    def read_all_entries(user_id: str, tag_name: str) -> dict:
         """
         Reads all entries currently stored in local database.
 
         Args:
             user_id: string representing the id of the user the entry belongs to
             tag_name: name of entry tag to filter by
-            sort_by: string indicating how entries should be sorted by
 
         Returns:
              dictionary containing all the stored entries, where each entry has an id, title, body, date, and time
@@ -206,4 +205,3 @@ class Diary:
             if entry.created.strftime("%d/%m/%Y") == today.strftime("%d/%m/%Y"):
                 return True
         return False
-

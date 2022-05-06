@@ -42,5 +42,3 @@ class DiaryUser:
         db.session.delete(user)
         db.session.commit()
         return {"user_id": user.id}
-
-

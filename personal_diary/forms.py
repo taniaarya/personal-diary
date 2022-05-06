@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from markupsafe import Markup
-from wtforms import StringField, SubmitField, PasswordField, SearchField, RadioField, SelectField
+from wtforms import StringField, SubmitField, PasswordField, SearchField, RadioField
 from wtforms.validators import DataRequired, Length, EqualTo, Optional
 from flask_ckeditor import CKEditorField
 
