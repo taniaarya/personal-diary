@@ -12,6 +12,7 @@ class DiaryUser:
     def create_user(request: dict) -> dict:
         """
         Adds user specified by request parameter to database.
+
         Args:
             request: dictionary containing username, full name, and password of new user
         Returns:
@@ -31,6 +32,7 @@ class DiaryUser:
     def delete_user(request: dict) -> dict:
         """
         Deletes a user from the database
+
         Args:
             request: dictionary containing the user to be deleted
         Returns:
