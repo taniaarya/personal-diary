@@ -42,6 +42,7 @@ class Diary:
     def add_tags_to_entry(entry: Entry, tags: list) -> None:
         """
         Attaches tags to the given entry.
+
         Args:
             entry: an Entry object which the tags will be attached to
             tags: a list of tags to attach to the entry parameter in the form ["tag1", "tag2", "tag3"]

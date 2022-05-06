@@ -79,6 +79,10 @@ Within the `tests` folder is the following:
 - `test_diary_integration.py`: the Python integration test file for diary's CRUD operations.
 - `test_diary_user.py`: the Python test suite for user-related operations.
 
+### Sphinx Documentation
+The `docs` folder contains the project's automatically-generated Sphinx documentation. To access the Sphinx documentation,
+open on the `index.html` file in a browser. This will open the main page that links to the specific module pages.
+
 ## Team Member Split
 ### Tania (20%)
 - Setup SQL database connection using Flask-SQLAlchemy
