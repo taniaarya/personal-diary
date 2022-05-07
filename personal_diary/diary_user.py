@@ -20,8 +20,8 @@ class DiaryUser:
         """
         new_user_id = str(uuid.uuid4())
         new_user = User(id=new_user_id,
-                        username=request["username"],
-                        name=request["full_name"],
+                        username=request["username"].strip(),
+                        name=request["full_name"].strip(),
                         password=request["password"],
                         )
         db.session.add(new_user)
