@@ -1,12 +1,15 @@
 import unittest
+import os
 from datetime import datetime, timedelta
 from personal_diary.diary import Diary
-from personal_diary.app import create_app
+from personal_diary.app import flask_app
 from personal_diary.models import Entry, Tag
 from personal_diary import db
 
-app = create_app("test_database.db")
-app.app_context().push()
+basedir = os.path.abspath(os.path.dirname(__file__))
+flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, "test_database.db")
+flask_app.app_context().push()
+db.create_all()
 
 
 class DiaryTestCreateEntry(unittest.TestCase):

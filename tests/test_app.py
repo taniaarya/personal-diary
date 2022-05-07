@@ -1,18 +1,21 @@
 import unittest
 from unittest import TestCase, mock
+import os
 from personal_diary import db
-from personal_diary.app import create_app
+from personal_diary.app import flask_app
 from personal_diary.models import User
 from personal_diary.diary import Diary
 from werkzeug.security import generate_password_hash
 
 
 def set_up_flask_app_test_client():
-    flask_app = create_app("test_database.db")
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, "test_database.db")
     flask_app.config['TESTING'] = True
     flask_app.config['WTF_CSRF_ENABLED'] = False
     flask_app.config["LOGIN_DISABLED"] = True
     flask_app.app_context().push()
+    db.create_all()
     return flask_app.test_client()
 
 

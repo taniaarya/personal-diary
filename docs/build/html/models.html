@@ -38,20 +38,35 @@
 </div>
 <span class="target" id="module-personal_diary.models"></span><dl class="py class">
 <dt class="sig sig-object py" id="personal_diary.models.Entry">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">personal_diary.models.</span></span><span class="sig-name descname"><span class="pre">Entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#personal_diary.models.Entry" title="Permalink to this definition">¶</a></dt>
-<dd><p>Data model for diary entries</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">personal_diary.models.</span></span><span class="sig-name descname"><span class="pre">Entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#personal_diary.models.Entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the data model for diary entries. Each entry can contain an id for the entry, title, body,
+created datetime, modified datetime, tags, user_id, and mood.</p>
+<dl class="simple">
+<dt>Inherits:</dt><dd><p>UserMixin: base class from Flask to be able to check whether an entry matches the logged-in user
+db.Model: base class from SQLAlchemy to define a model</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="personal_diary.models.Tag">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">personal_diary.models.</span></span><span class="sig-name descname"><span class="pre">Tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#personal_diary.models.Tag" title="Permalink to this definition">¶</a></dt>
-<dd><p>Data model for diary entry tags</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">personal_diary.models.</span></span><span class="sig-name descname"><span class="pre">Tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#personal_diary.models.Tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the data model for diary entry tags. Tags can contain an id and name.</p>
+<dl class="simple">
+<dt>Inherits:</dt><dd><p>db.Model: base class from SQLAlchemy to define a model</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="personal_diary.models.User">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">personal_diary.models.</span></span><span class="sig-name descname"><span class="pre">User</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#personal_diary.models.User" title="Permalink to this definition">¶</a></dt>
-<dd><p>Data model for users</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">personal_diary.models.</span></span><span class="sig-name descname"><span class="pre">User</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#personal_diary.models.User" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the data model for users. Users can contain an id, username, name, password, and associated entries.</p>
+<dl class="simple">
+<dt>Inherits:</dt><dd><p>UserMixin: base class from Flask to be able to check whether the user matches the logged-in user
+db.Model: base class from SQLAlchemy to define a model</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -107,7 +122,7 @@
       &copy;2022, Amarachi Joe-Nweke, Danielle Valcarcel, Mausam Patel, Max Nguyen, Tania Arya.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
