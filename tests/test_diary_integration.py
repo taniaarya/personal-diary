@@ -1,15 +1,18 @@
 import unittest
+import os
 from unittest import TestCase
 from personal_diary.app import Diary
 from personal_diary import db
-from personal_diary.app import create_app
+from personal_diary.app import flask_app
 from personal_diary.models import Entry
 
 
 class ApplicationTestCaseEndToEnd(TestCase):
     def setUp(self) -> None:
-        flask_app = create_app("test_database.db")
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, "test_database.db")
         flask_app.app_context().push()
+        db.create_all()
         self.client = flask_app.test_client()
         self.diary = Diary()
 

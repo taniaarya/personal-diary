@@ -37,9 +37,126 @@
 <div class="toctree-wrapper compound">
 </div>
 <span class="target" id="module-personal_diary.app"></span><dl class="py function">
-<dt class="sig sig-object py" id="personal_diary.app.create_app">
-<span class="sig-prename descclassname"><span class="pre">personal_diary.app.</span></span><span class="sig-name descname"><span class="pre">create_app</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#personal_diary.app.create_app" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates the Flask application by setting up the database connection, user management, and page routes.</p>
+<dt class="sig sig-object py" id="personal_diary.app.create_entry">
+<span class="sig-prename descclassname"><span class="pre">personal_diary.app.</span></span><span class="sig-name descname"><span class="pre">create_entry</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">werkzeug.wrappers.response.Response</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#personal_diary.app.create_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders the page with a form for users to create an entry. This form allows users to input the title,
+body text, select a mood rating, and add tags. After creating the entry,
+it redirects back to the page to view that specific entry.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>response: the HTML for the page with the form or the redirect to the read_single_entry page upon
+submission of the form</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="personal_diary.app.delete_entry">
+<span class="sig-prename descclassname"><span class="pre">personal_diary.app.</span></span><span class="sig-name descname"><span class="pre">delete_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">werkzeug.wrappers.response.Response</span></span></span><a class="headerlink" href="#personal_diary.app.delete_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the entry with the given entry_id. It redirects back to the
+home screen showing the list of existing entries.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>entry_id: the id of the entry to delete</p>
+</dd>
+<dt>Returns:</dt><dd><p>response: the redirect back to the home page</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="personal_diary.app.delete_user">
+<span class="sig-prename descclassname"><span class="pre">personal_diary.app.</span></span><span class="sig-name descname"><span class="pre">delete_user</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">werkzeug.wrappers.response.Response</span></span></span><a class="headerlink" href="#personal_diary.app.delete_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the user with the given user_id. It redirects back to the login screen after completion.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>response: the redirect back to the login page</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="personal_diary.app.load_user">
+<span class="sig-prename descclassname"><span class="pre">personal_diary.app.</span></span><span class="sig-name descname"><span class="pre">load_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#personal_diary.app.load_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines what the currently logged-in user is.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>user_id: the id of the currently logged-in user</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="personal_diary.app.login">
+<span class="sig-prename descclassname"><span class="pre">personal_diary.app.</span></span><span class="sig-name descname"><span class="pre">login</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">werkzeug.wrappers.response.Response</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#personal_diary.app.login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders login form allowing user to access their account and diary.
+If the username does not exist or the password does not match the record for the username,
+the user will be prompted to try again or create an account. Otherwise, they will be redirected to the home
+page for their account.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>response: the HTML for the page with the login form or the redirect to the home page</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="personal_diary.app.logout">
+<span class="sig-prename descclassname"><span class="pre">personal_diary.app.</span></span><span class="sig-name descname"><span class="pre">logout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">werkzeug.wrappers.response.Response</span></span></span><a class="headerlink" href="#personal_diary.app.logout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logs out the currently logged-in user and redirects back to the login page.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>response: the redirect back to the login page</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="personal_diary.app.read_entries">
+<span class="sig-prename descclassname"><span class="pre">personal_diary.app.</span></span><span class="sig-name descname"><span class="pre">read_entries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#personal_diary.app.read_entries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders the home page, which shows a list of the current entries or entries matching the user’s search query.
+These entries can be sorted based on date.
+If a tag is specified, the entries will be further filtered by the tag name.
+The page also displays a reminder if no entry has been made for the current day.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>tag_name: the name of a tag to filter entries by</p>
+</dd>
+<dt>Returns:</dt><dd><p>response: the HTML to display the home page showing the list of entries</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="personal_diary.app.read_single_entry">
+<span class="sig-prename descclassname"><span class="pre">personal_diary.app.</span></span><span class="sig-name descname"><span class="pre">read_single_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#personal_diary.app.read_single_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders the page showing the contents for a diary entry. This includes the title, body text, date modified,
+date created, selected mood, and any tags that were added.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>entry_id: the id of the entry to display</p>
+</dd>
+<dt>Returns:</dt><dd><p>response: the HTML to display the page with the entry’s contents</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="personal_diary.app.signup">
+<span class="sig-prename descclassname"><span class="pre">personal_diary.app.</span></span><span class="sig-name descname"><span class="pre">signup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">werkzeug.wrappers.response.Response</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#personal_diary.app.signup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders signup form allowing user to enter their username, full name, and password.
+If the username already exists, the user will be prompted to sign up again. Otherwise,
+they will be redirected to the login page with the new credentials.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>response: the HTML for the signup page or the redirect to the login page</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="personal_diary.app.update_entry">
+<span class="sig-prename descclassname"><span class="pre">personal_diary.app.</span></span><span class="sig-name descname"><span class="pre">update_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">werkzeug.wrappers.response.Response</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#personal_diary.app.update_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renders the page with fields for a user to update the contents of an entry. This includes the title, body text,
+mood rating, or tags. After updating the entry, it redirects back to page to view that specific entry.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>entry_id: the id of the entry to display and update</p>
+</dd>
+<dt>Returns:</dt><dd><p>response: the HTML for the page with the fields or the redirect to the read_single_entry page upon
+submission of the form</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -95,7 +212,7 @@
       &copy;2022, Amarachi Joe-Nweke, Danielle Valcarcel, Mausam Patel, Max Nguyen, Tania Arya.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
