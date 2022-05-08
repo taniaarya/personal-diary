@@ -3,14 +3,32 @@
 
 This repository contains the implementation for the Personal Diary application. With this application, users are able to create, add to, and customize their own Personal Diary. They can create text entries that are stored onto their machine that can be viewed, edited, or deleted. This version of Personal Diary allows the user to use the application through a command line interface.
 
-- [Accessing the Application](#accessing-the-application)
+- [Accessing the Diary Web Application](#accessing-the-public-diary-web-application)
+- [Running the Project Locally](#running-the-project-locally)
 - [Using Your Personal Diary](#using-your-personal-diary)
 - [Developer Documentation](#developer-documentation)
 
-## Accessing the Application
+## Accessing the Public Diary Web Application 
+Navigate to [https://go.umd.edu/diary-app](https://go.umd.edu/diary-app) in your browser to visit the diary application website,
+which is deployed in the cloud.
 
-No installation is necessary to use the app.
-Navigate to [http://52.91.242.152:5001/](http://52.91.242.152:5001/) in your browser to visit the diary application website.
+## Running the Project Locally 
+The application can also be used locally instead.
+
+### Initial Installation
+
+1. Make sure [Docker](https://www.docker.com/get-started/) is installed on your device
+2. Build the image
+   ```commandline
+   docker build -t personal-diary:team_02 -f Dockerfile .
+   ```
+3. Run the image inside the container
+    ```commandline
+   docker run --name personal-diary -p 5001:5001 -d personal-diary:team_02
+   ```
+   
+### Accessing the Local Application
+Navigate to [http://127.0.0.1:5001](http://127.0.0.1:5001) in your browser to visit the diary application locally.
 
 ## Using Your Personal Diary
 This section explains some basic core operations that the user can perform within their Personal Diary. They can create an entry, view all entries, edit an entry, and delete an entry. They can also create an account that is used to save and access their entries.
@@ -73,7 +91,7 @@ open on the `index.html` file in a browser. This will open the main page that li
 ### Mausam (20%)
 - Updated UI for read entry page
 - Implemented addition of mood option to diary entries
-- Deployed app to cloud to be accessible from IP address
+- Deployed app to cloud to be accessible from IP address and updated documentation
 
 ### Max (20%)
 - Updated UI for Home page
