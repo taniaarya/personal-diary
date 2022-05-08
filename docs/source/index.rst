@@ -14,6 +14,8 @@ The Personal Diary is an application that allows users to create accounts for th
 Users can then create, update and delete diary entries containing customized texts and images, as well as attach mood
 emojis to entries.
 
+The public Diary Web Application can be accessed at `https://go.umd.edu/diary-app <https://go.umd.edu/diary-app>`_
+
 The following contains links to documentation on the modules found in the personal-diary directory:
 
 :doc:`app` - the Python file containing code for Personal Diary's Flask app.
