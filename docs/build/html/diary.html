@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Diary &#8212; Personal Diary sprint_3_release documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="diary">
+<h1>Diary<a class="headerlink" href="#diary" title="Permalink to this headline">¶</a></h1>
+<p>The following documentation provides details about the Diary class - including the diary’s operations such as the
+functions to create, read, update, and delete entries.</p>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-personal_diary.diary"></span><dl class="py class">
+<dt class="sig sig-object py" id="personal_diary.diary.Diary">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">personal_diary.diary.</span></span><span class="sig-name descname"><span class="pre">Diary</span></span><a class="headerlink" href="#personal_diary.diary.Diary" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class representing a personal diary. The diary contains Entry objects which are defined in models.py.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="personal_diary.diary.Diary.add_tags_to_entry">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_tags_to_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="models.html#personal_diary.models.Entry" title="personal_diary.models.Entry"><span class="pre">personal_diary.models.Entry</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#personal_diary.diary.Diary.add_tags_to_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attaches tags to the given entry.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>entry: an Entry object which the tags will be attached to
+tags: a list of tags to attach to the entry parameter in the form [“tag1”, “tag2”, “tag3”]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="personal_diary.diary.Diary.check_entry_for_today">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_entry_for_today</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#personal_diary.diary.Diary.check_entry_for_today" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searches the collection of entries for a user to see if the user has made an entry for the day.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>user_id: string representing the id of the user the entry belongs to</p>
+</dd>
+<dt>Returns:</dt><dd><p>a boolean which represents whether the user has made an entry for the day</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="personal_diary.diary.Diary.create_entry">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#personal_diary.diary.Diary.create_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds entry specified by request parameter to database.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>request: dictionary containing title, and body text</dt><dd><p>representing the entry to be added, as well as the user id of
+the user the entry is for</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>dictionary containing the entry_id of the new entry</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="personal_diary.diary.Diary.delete_entry">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#personal_diary.diary.Diary.delete_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the entry with the id specified by the request parameter.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>request: a dictionary containing a key-value pair where the value is the id of the entry to delete</p>
+</dd>
+<dt>Returns:</dt><dd><p>dictionary containing the id of the entry that was deleted</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="personal_diary.diary.Diary.read_all_entries">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_all_entries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#personal_diary.diary.Diary.read_all_entries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads all entries currently stored in local database.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>user_id: string representing the id of the user the entry belongs to
+tag_name: name of entry tag to filter by</p>
+</dd>
+<dt>Returns:</dt><dd><p>dictionary containing all the stored entries, where each entry has an id, title, body, date, and time</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="personal_diary.diary.Diary.read_single_entry">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_single_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#personal_diary.diary.Diary.read_single_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads single diary entry from the database.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>request: a dictionary a single key, “entry_id” whose value is the id of the entry to be read</p>
+</dd>
+<dt>Returns:</dt><dd><p>a dictionary containing a key “entry” with of a value of type Entry. The Entry has information about the
+title, body, date_created, and time_created of the requested entry_id</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="personal_diary.diary.Diary.search_entries">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">search_entries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'created_desc'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#personal_diary.diary.Diary.search_entries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns entries that contain the keywords in the search query. The search is not case-sensitive.
+An entry matches the search query if it contains all keywords in its title or body text.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>search_query: a string containing keywords to search for in the query. For example, a string of
+“apple pear” has two keywords of “apple” and “pear”.
+user_id: string representing the id of the user the entry belongs to
+tag_name: name of entry tag to filter by
+sort_by: string representing how entries should be sorted by</p>
+</dd>
+<dt>Returns:</dt><dd><p>dictionary containing the entries that match the search query</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="personal_diary.diary.Diary.sort_entries">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sort_entries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="models.html#personal_diary.models.Entry" title="personal_diary.models.Entry"><span class="pre">personal_diary.models.Entry</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span></span></span><a class="headerlink" href="#personal_diary.diary.Diary.sort_entries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sorts a collection of entries based on either date created or date modified.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>entries: an Entry object that is used to do the sorting on
+sort_type: a string indicating the type of sort to do. The sorting can be based on the date modified
+or date created time, ascending or descending.</p>
+</dd>
+<dt>Returns:</dt><dd><p>an iterable collection of sorted entries</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="personal_diary.diary.Diary.update_entry">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_entry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#personal_diary.diary.Diary.update_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the entry specified by request parameter. The user may update the body text or title
+of a given entry.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>request: a dictionary containing title, body and id of the specific entry.</p>
+</dd>
+<dt>Returns:</dt><dd><p>a dictionary containing the updated entry</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Personal Diary</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Amarachi Joe-Nweke, Danielle Valcarcel, Mausam Patel, Max Nguyen, Tania Arya.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.5.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/diary.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

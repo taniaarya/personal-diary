@@ -1,7 +1,9 @@
 from datetime import datetime
 import uuid
-from personal_diary.models import Entry
+from personal_diary.models import Entry, Tag
+from sqlalchemy import desc, asc
 from personal_diary import db
+from typing import Iterable
 
 
 class Diary:
@@ -28,12 +30,29 @@ class Diary:
                       title=request["title"],
                       body=request["body"],
                       created=curr_datetime,
-                      modified=None,
-                      folder=None,
-                      user_id=request["user_id"])
+                      modified=curr_datetime,
+                      user_id=request["user_id"],
+                      mood=request["mood"])
+        Diary.add_tags_to_entry(entry, request["tags"])
         db.session.add(entry)
         db.session.commit()
         return {"entry_id": new_entry_id}
+
+    @staticmethod
+    def add_tags_to_entry(entry: Entry, tags: list) -> None:
+        """
+        Attaches tags to the given entry.
+
+        Args:
+            entry: an Entry object which the tags will be attached to
+            tags: a list of tags to attach to the entry parameter in the form ["tag1", "tag2", "tag3"]
+        """
+        entry.tags = []
+        for tag_name in tags:
+            tag = Tag.query.filter_by(name=tag_name).first()
+            if not tag:
+                tag = Tag(name=tag_name)
+            entry.tags.append(tag)
 
     @staticmethod
     def read_single_entry(request: dict) -> dict:
@@ -51,19 +70,22 @@ class Diary:
         return {"entry": entry}
 
     @staticmethod
-    def read_all_entries(user_id: str) -> dict:
+    def read_all_entries(user_id: str, tag_name: str) -> dict:
         """
         Reads all entries currently stored in local database.
 
         Args:
             user_id: string representing the id of the user the entry belongs to
+            tag_name: name of entry tag to filter by
 
         Returns:
              dictionary containing all the stored entries, where each entry has an id, title, body, date, and time
         """
         all_entries = Entry.query.filter_by(user_id=user_id)
-        entry_dict = {}
+        if tag_name:
+            all_entries = all_entries.join(Entry.tags).filter(Tag.name == tag_name).all()
 
+        entry_dict = {}
         for entry in all_entries:
             entry_dict[entry.id] = entry
 
@@ -85,6 +107,9 @@ class Diary:
         entry_id = request["entry_id"]
         entry.body = request["body"]
         entry.title = request["title"]
+        entry.mood = request["mood"]
+        entry.modified = datetime.now()
+        Diary.add_tags_to_entry(entry, request["tags"])
         db.session.commit()
         return {entry_id: entry}
 
@@ -107,7 +132,7 @@ class Diary:
         return {"entry_id": entry_id}
 
     @staticmethod
-    def search_entries(search_query: str, user_id: str) -> dict:
+    def search_entries(search_query: str, user_id: str, tag_name: str, sort_by: str = "created_desc") -> dict:
         """
         Returns entries that contain the keywords in the search query. The search is not case-sensitive.
         An entry matches the search query if it contains all keywords in its title or body text.
@@ -116,17 +141,67 @@ class Diary:
             search_query: a string containing keywords to search for in the query. For example, a string of
             "apple pear" has two keywords of "apple" and "pear".
             user_id: string representing the id of the user the entry belongs to
+            tag_name: name of entry tag to filter by
+            sort_by: string representing how entries should be sorted by
 
         Returns:
             dictionary containing the entries that match the search query
         """
+        if search_query is None:
+            return Diary.read_all_entries(user_id, tag_name)
+
         matching_entries = Entry.query.filter_by(user_id=user_id)
+        matching_entries = Diary.sort_entries(matching_entries, sort_by)
+
         for keyword in search_query.split(' '):
             matching_entries = matching_entries.filter(Entry.title.ilike("%" + keyword + "%") |
                                                        Entry.body.ilike("%" + keyword + "%"))
+
+        if tag_name:
+            matching_entries = matching_entries.join(Entry.tags).filter(Tag.name == tag_name).all()
 
         entry_dict = {}
         for entry in matching_entries:
             entry_dict[entry.id] = entry
 
         return entry_dict
+
+    @staticmethod
+    def sort_entries(entries: Entry, sort_type: str) -> Iterable:
+        """
+        Sorts a collection of entries based on either date created or date modified.
+
+        Args:
+            entries: an Entry object that is used to do the sorting on
+            sort_type: a string indicating the type of sort to do. The sorting can be based on the date modified
+            or date created time, ascending or descending.
+
+        Returns:
+            an iterable collection of sorted entries
+        """
+        if sort_type == "created_asc":
+            return entries.order_by(asc(Entry.created))
+        elif sort_type == "modified_asc":
+            return entries.order_by(asc(Entry.modified))
+        elif sort_type == "modified_desc":
+            return entries.order_by(desc(Entry.modified))
+        else:
+            return entries.order_by(desc(Entry.created))
+
+    @staticmethod
+    def check_entry_for_today(user_id: str) -> bool:
+        """
+        Searches the collection of entries for a user to see if the user has made an entry for the day.
+
+        Args:
+            user_id: string representing the id of the user the entry belongs to
+
+        Returns:
+            a boolean which represents whether the user has made an entry for the day
+        """
+        today = datetime.today()
+        user_entries = Entry.query.filter_by(user_id=user_id)
+        for entry in user_entries:
+            if entry.created.strftime("%d/%m/%Y") == today.strftime("%d/%m/%Y"):
+                return True
+        return False

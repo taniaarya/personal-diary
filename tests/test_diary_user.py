@@ -1,12 +1,15 @@
 import unittest
+import os
 from personal_diary.diary_user import DiaryUser
-from personal_diary.app import create_app
+from personal_diary.app import flask_app
 from personal_diary.models import User
 from personal_diary import db
 from werkzeug.security import generate_password_hash
 
-app = create_app("test_database.db")
-app.app_context().push()
+basedir = os.path.abspath(os.path.dirname(__file__))
+flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, "test_database.db")
+flask_app.app_context().push()
+db.create_all()
 
 
 class DiaryUserTestCreateUser(unittest.TestCase):
@@ -51,6 +54,40 @@ class DiaryUserTestCreateUser(unittest.TestCase):
             self.assertEqual(db_entry.username, self.valid_request["username"])
             self.assertEqual(db_entry.name, self.valid_request["full_name"])
             self.assertEqual(db_entry.password, self.valid_request["password"])
+            
+            
+class DiaryUserTestDeleteUser(unittest.TestCase):
+
+    def tearDown(self) -> None:
+        db.session.query(User).delete()
+        db.session.commit()
+
+    @staticmethod
+    def populate_multiple_users():
+        for user_id in range(5):
+            password = generate_password_hash(str(user_id))
+            test_user = User(id=str(user_id), username=f"username{user_id}", name="User", password=password)
+            db.session.add(test_user)
+        db.session.commit()
+
+    @staticmethod
+    def populate_single_user():
+        test_user = User(id=str(1), username=f"username{1}", name="User", password=generate_password_hash("1"))
+        db.session.add(test_user)
+        db.session.commit()
+        return test_user
+
+    def test_delete_empties_users_when_only_one_user(self):
+        test_user = self.populate_single_user()
+        self.assertDictEqual(DiaryUser.delete_user({"user": test_user}), {"user_id": "1"})
+        self.assertIsNone(User.query.get("1"))
+
+    def test_delete_with_two_existing_users_only_deletes_specified_user(self):
+        self.populate_multiple_users()
+        for user_id in range(5):
+            test_user = User.query.get(str(user_id))
+            self.assertDictEqual(DiaryUser.delete_user({"user": test_user}), {"user_id": str(user_id)})
+        self.assertEqual(User.query.all(), [])
 
 
 if __name__ == '__main__':

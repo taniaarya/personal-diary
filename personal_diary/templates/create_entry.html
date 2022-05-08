@@ -14,7 +14,7 @@ Args:
         <form method="POST" action="{{ url_for('create_entry') }}">
             {{ form.csrf_token }}
 
-            <fieldset class="form-field">
+            <fieldset class="form-field mt-2">
                 {{ form.title.label }}<br>
                 {{ form.title }}
                 {% if form.title.errors %}
@@ -26,7 +26,20 @@ Args:
                 {% endif %}
             </fieldset>
 
-            <fieldset class="form-field">
+            <fieldset class="form-field mt-2">
+                <div class="mb-2">Tags</div>
+                <div class="me-2 d-inline">
+                    {{ form.tag1 }}
+                </div>
+                <div class="me-2 d-inline">
+                    {{ form.tag2 }}
+                </div>
+                <div class="me-2 d-inline">
+                    {{ form.tag3 }}
+                </div>
+            </fieldset>
+
+            <fieldset class="form-field mt-2">
                 {{ form.body.label }}<br>
                 {{ form.body }}
                 {% if form.body.errors %}
@@ -38,7 +51,30 @@ Args:
                 {% endif %}
             </fieldset>
 
-            {{ form.submit }}
+            <fieldset class="form-field mt-2">
+                {{ form.mood.label }}<br>
+                {% for subfield in form.mood %}
+                <tr>
+                    <td>{{ subfield | safe }}</td>
+                    <td>{{ subfield.label | safe }}</td>
+                </tr>
+                {% endfor %}
+                {% if form.mood.errors %}
+                <ul class="errors">
+                    {% for error in form.body.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </fieldset>
+
+            <div class="d-inline ml-2">
+                {{ form.submit }}
+            </div>
+            <div class="mt-4 d-inline">
+                <a href="{{ url_for('read_entries') }}"
+                   class="btn rounded-pill btn-outline-danger float-end mx-2 " role="button">Discard</a>
+            </div>
 
         </form>
         {{ ckeditor.load(custom_url=url_for('static', filename='ckeditor/ckeditor.js')) }}

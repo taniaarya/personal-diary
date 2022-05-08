@@ -9,32 +9,36 @@ class DiaryUser:
     """
 
     @staticmethod
-    def create_user(request: dict):
+    def create_user(request: dict) -> dict:
         """
         Adds user specified by request parameter to database.
+
         Args:
             request: dictionary containing username, full name, and password of new user
         Returns:
-            dictionary containing the user id of the new entry
+            dictionary containing the user id of the new user
         """
         new_user_id = str(uuid.uuid4())
         new_user = User(id=new_user_id,
-                        username=request["username"],
-                        name=request["full_name"],
-                        password=request["password"]
+                        username=request["username"].strip(),
+                        name=request["full_name"].strip(),
+                        password=request["password"],
                         )
         db.session.add(new_user)
         db.session.commit()
         return {"user_id": new_user_id}
 
     @staticmethod
-    def read_user():
-        pass
+    def delete_user(request: dict) -> dict:
+        """
+        Deletes a user from the database
 
-    @staticmethod
-    def update_user():
-        pass
-
-    @staticmethod
-    def delete_user():
-        pass
+        Args:
+            request: dictionary containing the user to be deleted
+        Returns:
+            dictionary containing the user id of the deleted user
+        """
+        user = request["user"]
+        db.session.delete(user)
+        db.session.commit()
+        return {"user_id": user.id}

@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 <!--
 Displays a page showing the title, body text, and date created for an entry. It also contains buttons to
 edit or delete an entry.
@@ -10,19 +9,55 @@ Args:
 
 {% block content %}
 
-<h2 class="title">{{entry.title}} </h2>
+<div class="mb-2 centered" style="width: 800px">
+    <a href="{{ url_for('read_entries') }}" class="btn mt-4 mb-4">
+        <i class="fa fa-long-arrow-left" aria-hidden="true"></i>&nbsp;&nbsp; Back to all entries
+    </a><br>
+    <h2 style="width: 800px; overflow-wrap: break-word" class="title d-inline">{{entry.title}}</h2>
+    <h4 class="d-inline mx-2 align-baseline"> {{entry.mood|safe}} </h4>
+</div>
 
-<div style="width: 800px">
-    <p style="font-size: 16px" class="mb-4">Created: {{entry.created.replace(microsecond=0)}}</p>
-    <a href="{{ url_for('delete_entry', entry_id=entry.id) }}" class="btn btn-danger" role="button">Delete</a>
-    <a href="{{ url_for('update_entry', entry_id=entry.id) }}" class="btn btn-primary" role="button">Edit</a>
-    <br>
-    <br>
+
+<div class="centered" style="width: 800px">
+    <div>
+        <p style="font-size: 14px" class="mb-4 text-muted">
+            Created: {{entry.created.strftime('%m/%d/%Y %H:%M %p')}}
+            <br>
+            Modified: {{entry.modified.strftime('%m/%d/%Y %H:%M %p')}}
+        </p>
+    </div>
+
+    <div class="container-fluid mb-4">
+        <div class="row">
+            <div class="col">
+                <a href="{{ url_for('update_entry', entry_id=entry.id) }}" class="btn rounded-pill btn-dark standard-btn"
+                   role="button">Edit
+                </a>
+            </div>
+            <div class="col text-end">
+                <a href="{{ url_for('delete_entry', entry_id=entry.id) }}" class="btn rounded-pill btn-outline-danger standard-btn"
+                   role="button">Delete
+                </a>
+            </div>
+        </div>
+    </div>
 
     <div class="card">
         <div class="card-body">
             {{entry.body|safe}}
         </div>
+    </div>
+    <br>
+
+    <div>
+        {% if entry.tags|length() != 0 %}
+            Tags:&nbsp;
+        {% endif %}
+        {% for tag in entry.tags %}
+            <a class="btn btn-dark card-link rounded-pill tag" href="{{ url_for('read_entries', tag_name=tag.name) }}">
+                #{{ tag.name }}
+            </a>
+        {% endfor %}
     </div>
 </div>
 

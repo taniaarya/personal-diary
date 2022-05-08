@@ -1,18 +1,21 @@
 import unittest
 from unittest import TestCase, mock
+import os
 from personal_diary import db
-from personal_diary.app import create_app
-from personal_diary.models import Entry, User
+from personal_diary.app import flask_app
+from personal_diary.models import User
 from personal_diary.diary import Diary
 from werkzeug.security import generate_password_hash
 
 
 def set_up_flask_app_test_client():
-    flask_app = create_app("test_database.db")
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, "test_database.db")
     flask_app.config['TESTING'] = True
     flask_app.config['WTF_CSRF_ENABLED'] = False
     flask_app.config["LOGIN_DISABLED"] = True
     flask_app.app_context().push()
+    db.create_all()
     return flask_app.test_client()
 
 
@@ -24,8 +27,8 @@ def create_test_user():
 
 
 def tear_down_flask_test():
-    db.session.query(Entry).delete()
-    db.session.query(User).delete()
+    db.drop_all()
+    db.create_all()
     db.session.commit()
 
 
@@ -51,38 +54,27 @@ class ApplicationTestGETAll(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class ApplicationTestSearchPOST(TestCase):
+class ApplicationTestGETAllWithTag(TestCase):
 
     def setUp(self) -> None:
         self.client = set_up_flask_app_test_client()
         self.test_user = create_test_user()
+        Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1"], "mood": "128512"})
 
     def tearDown(self) -> None:
         tear_down_flask_test()
 
     @mock.patch('flask_login.utils._get_user')
-    def test_post_can_send_json(self, current_user):
+    def test_get_can_send_json(self, current_user):
         current_user.return_value = self.test_user
-        response = self.client.post('/', data=dict(
-            search="search term",
-        ), follow_redirects=True)
+        response = self.client.get("/tag1")
         self.assertTrue(response is not None)
 
     @mock.patch('flask_login.utils._get_user')
-    def test_post_valid_json_returns_success_response(self, current_user):
+    def test_get_valid_json_returns_success_response_get(self, current_user):
         current_user.return_value = self.test_user
-        response = self.client.post('/', data=dict(
-            search="search term",
-        ), follow_redirects=True)
+        response = self.client.get("/tag1")
         self.assertEqual(response.status_code, 200)
-
-    @mock.patch('flask_login.utils._get_user')
-    def test_successful_create_redirects_to_home(self, current_user):
-        current_user.return_value = self.test_user
-        response = self.client.post('/', data=dict(
-            search="search term",
-        ), follow_redirects=True)
-        self.assertEqual(response.request.path, "/")
 
 
 class ApplicationTestReadEntryGET(TestCase):
@@ -90,7 +82,8 @@ class ApplicationTestReadEntryGET(TestCase):
     def setUp(self) -> None:
         self.client = set_up_flask_app_test_client()
         self.test_user = create_test_user()
-        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1"}).get("entry_id")
+        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1"],
+                                            "mood": "&#128512"}).get("entry_id")
 
     def tearDown(self) -> None:
         tear_down_flask_test()
@@ -116,7 +109,8 @@ class ApplicationTestReadEntryGET(TestCase):
     @mock.patch('flask_login.utils._get_user')
     def test_get_entry_from_different_user_returns_404(self, current_user):
         current_user.return_value = self.test_user
-        diff_entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "2"})["entry_id"]
+        diff_entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "2", "tags": ["tag1"],
+                                            "mood": "&#128512"})["entry_id"]
         response = self.client.get(f'/entry/{diff_entry_id}')
         self.assertEqual(response.status_code, 404)
 
@@ -178,7 +172,8 @@ class ApplicationTestUpdateEntryGET(TestCase):
     def setUp(self) -> None:
         self.client = set_up_flask_app_test_client()
         self.test_user = create_test_user()
-        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1"}).get("entry_id")
+        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1"],
+                                            "mood": "&#128512"}).get("entry_id")
 
     def tearDown(self) -> None:
         tear_down_flask_test()
@@ -186,14 +181,16 @@ class ApplicationTestUpdateEntryGET(TestCase):
     @mock.patch('flask_login.utils._get_user')
     def test_update_can_send_json(self, current_user):
         current_user.return_value = self.test_user
-        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id}
+        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id, "tags": ["tag1"],
+                              "mood": "&#128512"}
         response = self.client.get("/edit/{}".format(self.entry_id), json=valid_request_json)
         self.assertTrue(response is not None)
 
     @mock.patch('flask_login.utils._get_user')
     def test_update_valid_json_returns_success_response(self, current_user):
         current_user.return_value = self.test_user
-        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id}
+        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id, "tags": ["tag1"],
+                              "mood": "&#128512"}
         response = self.client.get("/edit/{}".format(self.entry_id), json=valid_request_json)
         self.assertEqual(response.status_code, 200)
 
@@ -212,7 +209,8 @@ class ApplicationTestUpdateEntryGET(TestCase):
     @mock.patch('flask_login.utils._get_user')
     def test_get_entry_from_not_current_user_returns_404(self, current_user):
         current_user.return_value = self.test_user
-        diff_entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "2"})["entry_id"]
+        diff_entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "2", "tags": ["tag1"],
+                                            "mood": "&#128512"})["entry_id"]
         response = self.client.get(f'/edit/{diff_entry_id}')
         self.assertEqual(response.status_code, 404)
 
@@ -220,7 +218,8 @@ class ApplicationTestUpdateEntryGET(TestCase):
 class ApplicationTestUpdateEntryPOST(TestCase):
     def setUp(self) -> None:
         self.client = set_up_flask_app_test_client()
-        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1"}).get("entry_id")
+        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1"],
+                                            "mood": "&#128512"}).get("entry_id")
         self.test_user = create_test_user()
 
     def tearDown(self) -> None:
@@ -229,7 +228,8 @@ class ApplicationTestUpdateEntryPOST(TestCase):
     @mock.patch('flask_login.utils._get_user')
     def test_update_can_send_json(self, current_user):
         current_user.return_value = self.test_user
-        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id}
+        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id, "tags": ["tag1"],
+                              "mood": "&#128512"}
         response = self.client.post("/edit/{}".format(self.entry_id), json=valid_request_json)
         self.assertTrue(response is not None)
 
@@ -240,13 +240,14 @@ class ApplicationTestUpdateEntryPOST(TestCase):
         self.assertEqual(response.status_code, 200)
 
     @mock.patch('flask_login.utils._get_user')
-    def test_successful_edit_redirects_to_home(self, current_user):
+    def test_successful_edit_redirects_to_read_single_entry(self, current_user):
         current_user.return_value = self.test_user
         response = self.client.post('/edit/{}'.format(self.entry_id), data=dict(
             title="Title",
             body="Body",
+            mood="&#128512",
         ), follow_redirects=True)
-        self.assertEqual(response.request.path, "/")
+        self.assertEqual(response.request.path, f'/entry/{self.entry_id}')
 
     @mock.patch('flask_login.utils._get_user')
     def test_unsuccessful_edit_stays_on_create_page(self, current_user):
@@ -260,7 +261,8 @@ class ApplicationTestDeleteEntryGET(TestCase):
     def setUp(self) -> None:
         self.client = set_up_flask_app_test_client()
         self.test_user = create_test_user()
-        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1"}).get("entry_id")
+        self.entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "1", "tags": ["tag1"],
+                                            "mood": "&#128512"}).get("entry_id")
 
     def tearDown(self) -> None:
         tear_down_flask_test()
@@ -268,7 +270,7 @@ class ApplicationTestDeleteEntryGET(TestCase):
     @mock.patch('flask_login.utils._get_user')
     def test_delete_can_send_json(self, current_user):
         current_user.return_value = self.test_user
-        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id}
+        valid_request_json = {"title": "Title", "body": "Body", "entry_id": self.entry_id, "mood": "&#128512"}
         response = self.client.get("/delete/{}".format(self.entry_id), json=valid_request_json)
         self.assertTrue(response is not None)
 
@@ -288,7 +290,8 @@ class ApplicationTestDeleteEntryGET(TestCase):
     @mock.patch('flask_login.utils._get_user')
     def test_delete_entry_from_not_current_user_returns_404(self, current_user):
         current_user.return_value = self.test_user
-        diff_entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "2"})["entry_id"]
+        diff_entry_id = Diary.create_entry({"title": "Title", "body": "Body", "user_id": "2", "tags": ["tag1"],
+                                            "mood": "&#128512"})["entry_id"]
         response = self.client.get(f'/delete/{diff_entry_id}')
         self.assertEqual(response.status_code, 404)
 
@@ -334,7 +337,8 @@ class ApplicationTestSignupPOST(TestCase):
         response = self.client.post('/signup', data=dict(
             username="username",
             full_name="Test User",
-            password="password123"
+            password="password123",
+            confirm_password="password123"
         ), follow_redirects=True)
         self.assertEqual(response.request.path, "/login")
 
@@ -343,13 +347,30 @@ class ApplicationTestSignupPOST(TestCase):
         self.assertEqual(response.request.path, "/signup")
 
     def test_user_already_exists_redirects_to_signup_page(self):
-        user = User(id="1", username="username", name="Test User", password=generate_password_hash("password123"))
+        user = User(id="1", username="username",
+                    name="Test User",
+                    password=generate_password_hash("password123"))
         db.session.add(user)
         db.session.commit()
         response = self.client.post('/signup', data=dict(
             username="username",
             full_name="Test User",
-            password="password123"
+            password="password123",
+            confirm_password="password123"
+        ), follow_redirects=True)
+        self.assertEqual(response.request.path, "/signup")
+
+    def test_passwords_not_matching_redirects_to_signup_page(self):
+        user = User(id="1", username="username",
+                    name="Test User",
+                    password=generate_password_hash("password123"))
+        db.session.add(user)
+        db.session.commit()
+        response = self.client.post('/signup', data=dict(
+            username="username",
+            full_name="Test User",
+            password="password123",
+            confirm_password="password456"
         ), follow_redirects=True)
         self.assertEqual(response.request.path, "/signup")
 
@@ -421,6 +442,52 @@ class ApplicationTestLoginPOST(TestCase):
             username="username2",
             password="password123"
         ), follow_redirects=True)
+        self.assertEqual(response.request.path, "/login")
+
+
+class ApplicationTestDeleteUserGET(TestCase):
+
+    def setUp(self) -> None:
+        self.client = set_up_flask_app_test_client()
+        self.test_user = create_test_user()
+
+    def tearDown(self) -> None:
+        tear_down_flask_test()
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_delete_can_send_json(self, current_user):
+        current_user.return_value = self.test_user
+        response = self.client.get("/delete-user")
+        self.assertTrue(response is not None)
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_get_delete_redirects_to_login_page(self, current_user):
+        current_user.return_value = self.test_user
+        response = self.client.get("/delete-user", follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.request.path, "/login")
+
+
+class ApplicationTestLogoutUserGET(TestCase):
+
+    def setUp(self) -> None:
+        self.client = set_up_flask_app_test_client()
+        self.test_user = create_test_user()
+
+    def tearDown(self) -> None:
+        tear_down_flask_test()
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_delete_can_send_json(self, current_user):
+        current_user.return_value = self.test_user
+        response = self.client.get("/logout")
+        self.assertTrue(response is not None)
+
+    @mock.patch('flask_login.utils._get_user')
+    def test_get_delete_redirects_to_login_page(self, current_user):
+        current_user.return_value = self.test_user
+        response = self.client.get("/logout", follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.request.path, "/login")
 
 

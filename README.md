@@ -1,11 +1,19 @@
 # Personal Diary
+![coverage](https://cmsc435.garrettvanhoy.com//tarya/personal-diary/badges/main/coverage.svg)
+
 This repository contains the implementation for the Personal Diary application. With this application, users are able to create, add to, and customize their own Personal Diary. They can create text entries that are stored onto their machine that can be viewed, edited, or deleted. This version of Personal Diary allows the user to use the application through a command line interface.
 
-- [Container Setup & Teardown](#container-setup--teardown)
+- [Accessing the Diary Web Application](#accessing-the-public-diary-web-application)
+- [Running the Project Locally](#running-the-project-locally)
 - [Using Your Personal Diary](#using-your-personal-diary)
 - [Developer Documentation](#developer-documentation)
 
-## Container Setup & Teardown
+## Accessing the Public Diary Web Application 
+Navigate to [https://go.umd.edu/diary-app](https://go.umd.edu/diary-app) in your browser to visit the diary application website,
+which is deployed in the cloud.
+
+## Running the Project Locally 
+The application can also be used locally instead.
 
 ### Initial Installation
 
@@ -19,36 +27,25 @@ This repository contains the implementation for the Personal Diary application. 
    docker run --name personal-diary -p 5001:5001 -d personal-diary:team_02
    ```
    
-### Accessing the Application
-
-Navigate to [http://127.0.0.1:5001](http://127.0.0.1:5001) in your browser to visit the diary application website.
-
-### Stop and Remove the Container
-
-In order to stop and remove the container, run the following commands
-```commandline
-docker stop personal-diary
-docker rm personal-diary
-```
+### Accessing the Local Application
+Navigate to [http://127.0.0.1:5001](http://127.0.0.1:5001) in your browser to visit the diary application locally.
 
 ## Using Your Personal Diary
-There are currently four operations that the user can perform within their Personal Diary. They can create an entry, view all entries, edit an entry, and delete an entry. They can also create an account that is used to save and access their entries.
+This section explains some basic core operations that the user can perform within their Personal Diary. They can create an entry, view all entries, edit an entry, and delete an entry. They can also create an account that is used to save and access their entries.
 
 ### Creating an Account and Logging In
 Upon entering the Personal Diary, the user is first asked to sign in. To first create an account, click the "Sign up" button on the top corner and fill out the fields.
-
 Once the account is created, you can log in using these credentials on the Log In page.
 
 ### Viewing All Diary Entries
-Upon logging in, the user will see their diary Home Page. On this Home Page is their list of diary entries, displayed by their title and date created. They are sorted from most recent to oldest. The user can select an entry to view, or search for an entry using the search bar.
+Upon logging in, the user will see their diary Home Page. On this Home Page is their list of diary entries. The user can select an entry to view, or search for an entry using the search bar.
 
 ### Searching Through Entries
-In the search bar at the top of the Home Page, the user can search for entries by keyword. Searching will then sort and display the specific entries that contain the keyword(s) inputted.
+In the search bar at the top of the Home Page, the user can search for entries by keyword. Searching will display the specific entries that contain the keyword(s) inputted. Sorting is also possible by using the sort by dropdown.
 
 ### Creating A Diary Entry
-The user can create a new diary entry by pressing the Create Entry button at the top of the Home Page. The user can then create a new entry by giving it a title and contents. There are options to customize the appearance of the journal entry through the toolbar, such as changing the text color or background. 
-
-Once the done writing the entry, press the Save button to store the entry and return to the Home Page.
+The user can create a new diary entry by pressing the Create Entry button in the bottom right corner of the Home Page. The user can then create a new entry by giving it a title and contents with tags or an indicated mood. Entry appearance can be customized like by changing the text color.
+Press the Save button to store the entry once finished.
 
 ### Reading A Single Diary Entry
 The user can select a diary entry among the saved entries from the Home Page. Clicking an entry's title will take you to its page to view.
@@ -70,38 +67,42 @@ Within the `personal_diary` folder is the following:
 - `forms.py`: the Python file with code for the form used for user to add a new entry to the diary by inputting a title and body.
 - `models.py`: the Python file with code for the data model of the diary entries.
 - `personal-diary/templates`: This folder contains html files that are used as templates for the pages used in the Flask app.
-- `personal-diary/static`: This folder contains the custom build of CKEditor used for the Personal Diary's text fields.
+- `personal-diary/static`: This folder contains the custom build of CKEditor used for the Personal Diary's text fields and the style.css file to style the appearance of pages.
 
 ### tests
 Within the `tests` folder is the following:
 - `test_diary.py`: the Python unit test file that tests all functions in the `Diary` class.
 - `test_app.py`: the Python integration test file to test Flask REST endpoints.
-- `test_diary_integration.py`: the Python integration test file for diary's CRUD operations.
+- `test_diary_integration.py`: the Python integration test file for the diary's operations.
 - `test_diary_user.py`: the Python test suite for user-related operations.
+
+### Sphinx Documentation
+The `docs` folder contains the project's automatically-generated Sphinx documentation. To access the Sphinx documentation,
+open on the `index.html` file in a browser. This will open the main page that links to the specific module pages.
 
 ## Team Member Split
 ### Tania (20%)
-- Setup SQL database connection using Flask-SQLAlchemy
-- Implemented sign up page and user management
-- Refactored backend code to work specifically for the current user that is logged in
-- Implemented create_entry and sign_up page of Flask UI
-- Added 404 errors for invalid pages/requests
-- Updated tests for flask routes to check redirects and status code
+- Updated UI for Sign Up and Login page
+- Made updates to UI for all pages
+- Updated tests to increase code coverage
+- Implemented option to delete user
+- Refactored organization of app
+
 ### Mausam (20%)
-- Implemented login page
-- Implemented read_enty page of Flask UI
-- Refactored integration tests
+- Updated UI for read entry page
+- Implemented addition of mood option to diary entries
+- Deployed app to cloud to be accessible from IP address and updated documentation
+
 ### Max (20%)
-- Implemented delete_entry to be accessible through the Flask UI
-- Implemented the home page of the Flask UI
-  - Displays list of entries
-  - Search functionality
-  - Displays number of entries in the list 
-- Refactored code and updated comments
+- Updated UI for Home page
+- Implemented sort functionality and updated tests involving it
+- Updated comments and added code coverage badge to readme
+
 ### Danielle (20%)
-- Integrated the rich text editor plugin
-- Refactored CRUD operations and tests to use SQLAlchemy database
-- Updated README documentation
+- Generated Sphinx documentation
+- Implemented password confirmation during signup
+- Updated user’s name to appear on homepage navbar
+- Added implementation to allow users to attach images to entry
+
 ### Amarachi (20%)
-- Wrote tests for the search_entries function
-- Implemented update_entry page of Flask UI
+- Implemented daily reminder notifications to create an entry and wrote associated tests
