@@ -24,9 +24,14 @@ class CreateEntryForm(FlaskForm):
                        render_kw={'class': 'col-md-1', 'placeholder': 'Tag 2'})
     tag3 = StringField("Tag 3", validators=[Optional(), Length(min=1, max=20)],
                        render_kw={'class': 'col-md-1', 'placeholder': 'Tag 3'})
-    mood = RadioField('Mood', choices=[('&#128512', Markup('&#128512')), ('&#128525', Markup('&#128525')),
+    mood = RadioField('Mood', choices=[('&#128528', Markup('&#128528')),
+                                       ('&#128512', Markup('&#128512')),
+                                       ('&#128525', Markup('&#128525')),
+                                       ('&#128541', Markup('&#128541')),
                                        ('&#128532', Markup('&#128532')),
-                                       ('&#128545', Markup('&#128545'))], default="&#128512")
+                                       ('&#129314', Markup('&#129314')),
+                                       ('&#128552', Markup('&#128552')),
+                                       ('&#128545', Markup('&#128545'))], default="&#128528")
     submit = SubmitField("Create Entry", render_kw={'class': 'rounded-pill btn btn-dark float-end ml-2'})
 
 
@@ -52,9 +57,14 @@ class UpdateEntryForm(FlaskForm):
                          render_kw={'class': 'col-md-10', 'rows': '10'}
                          )
 
-    mood = RadioField('Mood', choices=[('&#128512', Markup('&#128512')), ('&#128525', Markup('&#128525')),
+    mood = RadioField('Mood', choices=[('&#128528', Markup('&#128528')),
+                                       ('&#128512', Markup('&#128512')),
+                                       ('&#128525', Markup('&#128525')),
+                                       ('&#128541', Markup('&#128541')),
                                        ('&#128532', Markup('&#128532')),
-                                       ('&#128545', Markup('&#128545'))], default="&#128512")
+                                       ('&#129314', Markup('&#129314')),
+                                       ('&#128552', Markup('&#128552')),
+                                       ('&#128545', Markup('&#128545'))], default="&#128528")
 
     tag1 = StringField("Tag 1", render_kw={'class': 'col-md-2', 'placeholder': 'Tag 1'})
     tag2 = StringField("Tag 2", render_kw={'class': 'col-md-2', 'placeholder': 'Tag 2'})
