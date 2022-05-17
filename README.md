@@ -1,5 +1,4 @@
 # Personal Diary
-![coverage](https://cmsc435.garrettvanhoy.com//tarya/personal-diary/badges/main/coverage.svg)
 
 This repository contains the implementation for the Personal Diary application. With this application, users are able to create, add to, and customize their own Personal Diary. They can create text entries that are stored onto their machine that can be viewed, edited, or deleted. This version of Personal Diary allows the user to use the application through a command line interface.
 
@@ -79,30 +78,3 @@ Within the `tests` folder is the following:
 ### Sphinx Documentation
 The `docs` folder contains the project's automatically-generated Sphinx documentation. To access the Sphinx documentation,
 open on the `index.html` file in a browser. This will open the main page that links to the specific module pages.
-
-## Team Member Split
-### Tania (20%)
-- Updated UI for Sign Up and Login page
-- Made updates to UI for all pages
-- Updated tests to increase code coverage
-- Implemented option to delete user
-- Refactored organization of app
-
-### Mausam (20%)
-- Updated UI for read entry page
-- Implemented addition of mood option to diary entries
-- Deployed app to cloud to be accessible from IP address and updated documentation
-
-### Max (20%)
-- Updated UI for Home page
-- Implemented sort functionality and updated tests involving it
-- Updated comments and added code coverage badge to readme
-
-### Danielle (20%)
-- Generated Sphinx documentation
-- Implemented password confirmation during signup
-- Updated user’s name to appear on homepage navbar
-- Added implementation to allow users to attach images to entry
-
-### Amarachi (20%)
-- Implemented daily reminder notifications to create an entry and wrote associated tests
